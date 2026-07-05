@@ -40,7 +40,7 @@ const UPGRADES: UpgradeDef[] = [
     id: 'armor', name: 'DECK PLATING',
     desc: 'Carrier hull integrity',
     baseCost: 28, costMult: 2.2, maxLevel: 6,
-    effect: (lv) => `${8 + 2 * lv} HP`,
+    effect: (lv) => `${10 + 2 * lv} HP`,
   },
   {
     id: 'barrels', name: 'TWIN MOUNT',
@@ -75,7 +75,7 @@ export const flakEra: EraModule<FlakState, FlakStats> = {
       shellSpeed: 2.2 + 0.25 * (era.shellSpeed ?? 0),
       damage: (1 + (era.damage ?? 0)) * resonance,
       burstRadius: (era.fuze ?? 0) === 0 ? 0 : 3 + 3 * (era.fuze ?? 0),
-      carrierMaxHp: 8 + 2 * (era.armor ?? 0),
+      carrierMaxHp: 10 + 2 * (era.armor ?? 0),
       barrels: 1 + (era.barrels ?? 0),
       echoMult: echoPowerMult(global),
       salvageMult: 1 + 0.3 * (era.salvageRig ?? 0),

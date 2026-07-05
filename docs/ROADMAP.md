@@ -22,14 +22,22 @@ Prove the hook: *lose → rewind → your ghosts fight beside you → upgrade �
 - Unlock: wave 5 in DEFCON LOOP + 60 chronotons to stabilize
 - Determinism suite extended to the plane spawn schedule
 
-## M4 — Global layer (partially done)
-- ✅ Temporal Resonance (best depth in other eras → firepower multiplier)
-- ✅ Chrono Compression; per-era chronoton factor (later eras pay more)
-- ☐ Fast Forward, Auto-Rewind
-- ☐ Balance pass on cost curves across two eras
+## M4 — Global layer ✅
+- Temporal Resonance (best depth in other eras → firepower multiplier)
+- Chrono Compression; per-era chronoton factor (later eras pay more)
+- TEMPORAL SKIP (fast-forward while below your best wave) and AUTO-REWIND
+  (5s self-restart, paused by any shop interaction)
+- Bot-driven balance probe (`BALANCE=1 npx vitest run tests/balance.report.test.ts`)
+  plays every era headlessly and reports death waves per tier; first tuning
+  pass applied (FLAK wave density/carrier HP, SIEGEBREAK aimed-arrow damage
+  model so fortification upgrades actually matter)
 
 ## M5 — Remaining eras (one per sub-milestone, ship in any order)
-- SIEGEBREAK (Invaders / parchment) → BROADSIDE (Breakout / 16-bit) → PRIMEVAL (Centipede / 2600) → DEBRIS FIELD (Asteroids / vector) → THE RIFT (Tempest / wireframe)
+- ✅ SIEGEBREAK (Invaders / parchment-woodcut): formation march with the
+  classic accelerando, aimed arrow volleys vs merlons + gate, piercing
+  ballista bolts. Unlock: wave 5 in FLAK ALLEY + 150 chronotons.
+- ☐ BROADSIDE (Breakout / 16-bit) → PRIMEVAL (Centipede / 2600) →
+  DEBRIS FIELD (Asteroids / vector) → THE RIFT (Tempest / wireframe)
 
 ## M6 — Idle layer
 - Parallel Simulation: unattended eras replay best Echo set, banking Salvage

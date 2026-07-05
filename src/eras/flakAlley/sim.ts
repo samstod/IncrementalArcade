@@ -125,7 +125,7 @@ export function bombY(b: Bomb, tick: number): number {
 export const BOOM_LIFE = 20;
 
 function planesInWave(k: number): number {
-  return Math.min(45, 5 + Math.floor(k * 1.8));
+  return Math.min(40, 4 + Math.floor(k * 1.4));
 }
 
 function spawnWave(state: FlakState, k: number): void {
@@ -141,7 +141,7 @@ function spawnWave(state: FlakState, k: number): void {
     const diveAt = Math.floor(travel * (0.4 + rng() * 0.4));
     const bombTicks: number[] = [];
     if (k >= 1) {
-      const n = bomber ? 2 : rng() < 0.5 ? 1 : 0;
+      const n = bomber ? 2 : rng() < 0.35 ? 1 : 0;
       for (let b = 0; b < n; b++) bombTicks.push(Math.floor(travel * (0.2 + rng() * 0.55)));
     }
     state.planes.push({

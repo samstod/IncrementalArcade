@@ -53,10 +53,12 @@ export interface EraModule<S = unknown, St = unknown> {
 
 import { defconEra } from './missileCommand/module';
 import { flakEra } from './flakAlley/module';
+import { siegeEra } from './siegebreak/module';
 
 export const ERAS: EraModule<unknown, unknown>[] = [
   defconEra as EraModule<unknown, unknown>,
   flakEra as EraModule<unknown, unknown>,
+  siegeEra as EraModule<unknown, unknown>,
 ];
 
 export function eraById(id: string): EraModule<unknown, unknown> {
@@ -67,7 +69,6 @@ export function eraById(id: string): EraModule<unknown, unknown> {
 
 /** Designed-but-unbuilt eras, teased on the timeline map. */
 export const TEASERS = [
-  { title: '1250 — SIEGEBREAK', hint: 'ranks of steel advance on the wall' },
   { title: '1720 — BROADSIDE', hint: 'a fortress. a cannonball. arithmetic.' },
   { title: 'PREHISTORY — PRIMEVAL', hint: 'something long is coming downhill' },
   { title: '2286 — DEBRIS FIELD', hint: 'the fleet is already dead' },

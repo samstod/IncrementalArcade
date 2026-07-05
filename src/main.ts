@@ -97,6 +97,23 @@ class Game {
     if (this.era.isOver(state)) this.endRun(true);
   }
 
+  /** TEMPORAL SKIP: compress time while still below this era's best wave. */
+  fastForwardActive(): boolean {
+    if (this.phase !== 'playing') return false;
+    const lv = this.save.globalLevels.fastForward ?? 0;
+    if (lv === 0) return false;
+    const best = eraSave(this.save, this.era.id).bestWave;
+    return this.era.liveInfo(this.state).wave < best;
+  }
+
+  /** One render-frame's worth of simulation (1× or fast-forwarded). */
+  stepFrame(): void {
+    const mult = this.fastForwardActive()
+      ? 1 + (this.save.globalLevels.fastForward ?? 0)
+      : 1;
+    for (let i = 0; i < mult && this.phase === 'playing'; i++) this.step();
+  }
+
   /** Manual early rewind ("collapse the timeline"). */
   collapse(): void {
     if (this.phase !== 'playing') return;
@@ -159,7 +176,13 @@ class Game {
 
   render(): void {
     this.era.render(this.ctx, this.state);
-    updateHud(this.era, this.era.liveInfo(this.state), this.save, this.replayers.length);
+    updateHud(
+      this.era,
+      this.era.liveInfo(this.state),
+      this.save,
+      this.replayers.length,
+      this.fastForwardActive() ? 1 + (this.save.globalLevels.fastForward ?? 0) : 0,
+    );
   }
 }
 
@@ -206,7 +229,7 @@ function main(): void {
   });
 
   startLoop(
-    () => game.step(),
+    () => game.stepFrame(),
     () => game.render(),
   );
 }

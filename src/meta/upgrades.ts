@@ -47,6 +47,18 @@ export const GLOBAL_UPGRADES: UpgradeDef[] = [
     baseCost: 75, costMult: 3, maxLevel: 5,
     effect: (lv) => `+${2 * lv}% per wave`,
   },
+  {
+    id: 'fastForward', name: 'TEMPORAL SKIP',
+    desc: 'Time compression while below your best wave',
+    baseCost: 40, costMult: 2.5, maxLevel: 3,
+    effect: (lv) => `×${1 + lv} speed`,
+  },
+  {
+    id: 'autoRewind', name: 'AUTO-REWIND',
+    desc: 'The loop restarts itself 5s after collapse (any purchase pauses it)',
+    baseCost: 50, costMult: 1, maxLevel: 1,
+    effect: (lv) => (lv > 0 ? 'engaged' : 'manual'),
+  },
 ];
 
 export function echoSlots(global: Levels): number {

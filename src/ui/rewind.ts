@@ -15,6 +15,22 @@ export interface RewindHooks {
   onTimeline: () => void;
 }
 
+let autoTimer: ReturnType<typeof setInterval> | null = null;
+let autoListener: AbortController | null = null;
+
+function cancelAutoRewind(): void {
+  if (autoTimer !== null) {
+    clearInterval(autoTimer);
+    autoTimer = null;
+  }
+}
+
+function teardownAuto(): void {
+  cancelAutoRewind();
+  autoListener?.abort();
+  autoListener = null;
+}
+
 export function showRewind(
   root: HTMLElement,
   era: EraModule,
@@ -25,9 +41,41 @@ export function showRewind(
 ): void {
   root.classList.remove('hidden');
   render(root, era, summary, chronoGain, save, hooks);
+
+  // AUTO-REWIND: restart in 5s; touching the shop pauses it for this screen.
+  teardownAuto();
+  if ((save.globalLevels.autoRewind ?? 0) > 0) {
+    autoListener = new AbortController();
+    let remain = 5;
+    const goBtn = () => root.querySelector<HTMLButtonElement>('.rw-go');
+    const label = () => {
+      const b = goBtn();
+      if (b) b.textContent = `⟲ AUTO-REWIND IN ${remain}…`;
+    };
+    label();
+    autoTimer = setInterval(() => {
+      remain--;
+      if (remain <= 0) {
+        cancelAutoRewind();
+        hooks.onRewind();
+      } else label();
+    }, 1000);
+    root.addEventListener(
+      'pointerdown',
+      (e) => {
+        // Clicking REWIND itself shouldn't cancel-then-require-a-second-click.
+        if ((e.target as HTMLElement).closest('.rw-go')) return;
+        cancelAutoRewind();
+        const b = goBtn();
+        if (b) b.textContent = `⟲ REWIND — BEGIN LOOP ${eraSave(save, era.id).loops + 1}`;
+      },
+      { capture: true, signal: autoListener.signal },
+    );
+  }
 }
 
 export function hideRewind(root: HTMLElement): void {
+  teardownAuto();
   root.classList.add('hidden');
 }
 

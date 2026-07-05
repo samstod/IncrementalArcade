@@ -5,11 +5,14 @@ moments in history from **the Unraveling**. Every defeat rewinds the loop — an
 your past runs replay beside you as ghostly **Echoes**, firing every shot they
 ever fired, empowered by every upgrade you've bought since.
 
-**Current state:** two playable eras — *1983 DEFCON LOOP* (Missile Command,
-neon/CRT) and *1944 FLAK ALLEY* (Galaga/1942-style, 8-bit NES pixel art) —
-with the full lose → rewind → echo-replay → upgrade loop, a timeline map with
-an unlock/travel flow, and Temporal Resonance cross-era boosts. Reach wave 5
-in 1983 and spend 60 Chronotons to stabilize 1944.
+**Current state:** three playable eras, each in its own art technology —
+*1983 DEFCON LOOP* (Missile Command, neon/CRT), *1944 FLAK ALLEY*
+(Galaga/1942-style, 8-bit NES pixel art), and *1250 SIEGEBREAK* (Space
+Invaders as a castle siege, parchment/woodcut ink) — with the full lose →
+rewind → echo-replay → upgrade loop, a timeline map with unlock/travel,
+Temporal Resonance cross-era boosts, and the TEMPORAL SKIP / AUTO-REWIND
+quality-of-life layer. Era chain: wave 5 in 1983 unlocks 1944; wave 5 in
+1944 unlocks 1250.
 
 - 📜 [Game Design Document](docs/GDD.md) — the seven eras, echo system, economy
 - 🗺️ [Roadmap](docs/ROADMAP.md) — milestones from slice to full game

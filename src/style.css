@@ -41,6 +41,12 @@ body {
 
 #btn-timeline { margin-left: auto; }
 .hud-era b { color: var(--neon-red); text-shadow: 0 0 6px var(--neon-red); }
+.hud-ff.active {
+  color: var(--neon-amber);
+  text-shadow: 0 0 8px var(--neon-amber);
+  animation: ff-pulse 0.6s infinite alternate;
+}
+@keyframes ff-pulse { from { opacity: 1; } to { opacity: 0.4; } }
 
 button {
   background: transparent;

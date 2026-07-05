@@ -13,6 +13,7 @@ export function updateHud(
   info: LiveInfo,
   save: SaveData,
   echoCount: number,
+  ffMult: number, // 0 = off, otherwise the active time-compression factor
 ): void {
   const es = eraSave(save, era.id);
   el('hud-era').textContent = era.short;
@@ -23,5 +24,8 @@ export function updateHud(
   el('hud-salvage').textContent = String(Math.floor(es.salvage + info.salvage));
   el('hud-chrono').textContent = String(save.chronotons);
   el('hud-best').textContent = es.bestWave > 0 ? `W${es.bestWave}` : '—';
+  const ff = el('hud-ff');
+  ff.textContent = ffMult > 0 ? `▶▶ ×${ffMult}` : '';
+  ff.classList.toggle('active', ffMult > 0);
   el('foot-hint').textContent = HINTS[era.inputMode];
 }
