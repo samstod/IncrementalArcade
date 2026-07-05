@@ -39,7 +39,8 @@ body {
 .hud-salvage b { color: var(--neon-amber); text-shadow: 0 0 6px var(--neon-amber); }
 .hud-chrono b { color: var(--neon-purple); text-shadow: 0 0 6px var(--neon-purple); }
 
-#btn-collapse { margin-left: auto; }
+#btn-timeline { margin-left: auto; }
+.hud-era b { color: var(--neon-red); text-shadow: 0 0 6px var(--neon-red); }
 
 button {
   background: transparent;
@@ -166,9 +167,13 @@ canvas {
 .shop.era .upg button { border-color: var(--neon-amber); color: var(--neon-amber); }
 .shop.era .upg button:hover:not(:disabled) { background: var(--neon-amber); color: #000; }
 
-.rw-go {
-  display: block;
+.rw-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
   margin: 18px auto 4px;
+}
+.rw-go {
   font-size: 16px;
   padding: 10px 34px;
   border-color: var(--neon-cyan);
@@ -176,6 +181,7 @@ canvas {
   text-shadow: 0 0 8px var(--neon-cyan);
 }
 .rw-go:hover { background: var(--neon-cyan); color: #000; text-shadow: none; }
+.rw-map { font-size: 13px; padding: 10px 16px; }
 
 .rw-echo-note {
   text-align: center;
@@ -183,4 +189,67 @@ canvas {
   color: var(--neon-cyan);
   opacity: 0.8;
   margin-top: 6px;
+}
+
+/* ── Timeline map ───────────────────────────────────────────── */
+
+#timeline {
+  position: absolute;
+  inset: 0;
+  background: var(--panel);
+  overflow-y: auto;
+  padding: 18px 26px;
+}
+#timeline.hidden { display: none; }
+
+#timeline h1 {
+  color: var(--neon-purple);
+  text-shadow: 0 0 14px var(--neon-purple);
+  font-size: 24px;
+  letter-spacing: 4px;
+  margin: 4px 0 2px;
+  text-align: center;
+}
+
+.tl-sub {
+  text-align: center;
+  font-size: 12px;
+  margin-bottom: 14px;
+  opacity: 0.85;
+}
+
+.tl-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.tl-card {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 10px 12px;
+  font-size: 11px;
+}
+.tl-card.open { border-color: var(--neon-cyan); }
+.tl-card.current {
+  border-color: var(--neon-amber);
+  box-shadow: 0 0 12px rgba(255, 210, 63, 0.25) inset;
+}
+.tl-card.locked { border-style: dashed; }
+.tl-card.teaser { opacity: 0.4; border-style: dotted; }
+
+.tl-title { color: #fff; font-size: 13px; letter-spacing: 1px; }
+.tl-title .here { color: var(--neon-amber); font-size: 10px; }
+.tl-flavor { opacity: 0.65; font-style: italic; margin: 2px 0 6px; }
+.tl-stats b { color: var(--neon-cyan); }
+.tl-req { color: var(--neon-red); margin-bottom: 6px; }
+.tl-req.met { color: var(--neon-cyan); }
+.tl-card button { margin-top: 4px; }
+.tl-go { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+.tl-go:hover { background: var(--neon-cyan); color: #000; }
+
+.tl-close {
+  display: block;
+  margin: 16px auto 4px;
+  font-size: 13px;
+  padding: 8px 26px;
 }

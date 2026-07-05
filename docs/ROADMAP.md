@@ -9,20 +9,24 @@ Prove the hook: *lose → rewind → your ghosts fight beside you → upgrade �
 - Rewind screen + upgrade shop: ~10 upgrades across Era/Timeline tabs, incl. **+Echo Slot** and Echo Empowerment
 - Neon/CRT art pass (glow, trails, scanlines, screen shake), localStorage save, determinism unit test
 
-## M2 — Meta shell & era plugin hardening
-- Timeline map screen (era select, locked-era teasers)
-- Formalize `EraModule` contract; move all Missile Command specifics behind it
-- Save versioning/migration; stats screen (best depth, loops, per-era records)
+## M2 — Meta shell & era plugin hardening ✅
+- Timeline map screen (era select, stabilize/unlock flow, locked-era teasers)
+- `EraModule` contract formalized; Missile Command fully behind it
+- Save v2 (multi-era) with transparent v1 migration
 
-## M3 — Era 2: FLAK ALLEY (proves the pattern)
-- Galaga/1942-style sim on the shared core; NES-style low-res backbuffer renderer
-- Era Key + depth-milestone unlock flow; second era-local upgrade set
-- Validates that a new era = one folder + one upgrade file
+## M3 — Era 2: FLAK ALLEY (proves the pattern) ✅
+- Galaga/1942-style sim on the shared core; NES-style 256×192 backbuffer
+  renderer with hard pixel upscale
+- Pointer-steered autofiring AA gun (second input mode: recordings are
+  target-x events, so echo gunners sweep their remembered arcs)
+- Unlock: wave 5 in DEFCON LOOP + 60 chronotons to stabilize
+- Determinism suite extended to the plane spawn schedule
 
-## M4 — Global layer
-- Temporal Resonance (best depth per era → global multiplier)
-- Chrono Compression, Fast Forward, Auto-Rewind
-- Balance pass on cost curves across two eras
+## M4 — Global layer (partially done)
+- ✅ Temporal Resonance (best depth in other eras → firepower multiplier)
+- ✅ Chrono Compression; per-era chronoton factor (later eras pay more)
+- ☐ Fast Forward, Auto-Rewind
+- ☐ Balance pass on cost curves across two eras
 
 ## M5 — Remaining eras (one per sub-milestone, ship in any order)
 - SIEGEBREAK (Invaders / parchment) → BROADSIDE (Breakout / 16-bit) → PRIMEVAL (Centipede / 2600) → DEBRIS FIELD (Asteroids / vector) → THE RIFT (Tempest / wireframe)
