@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23050510'/%3E%3Ctext x='2' y='13' font-size='13' fill='%233fd2ff'%3E⟲%3C/text%3E%3C/svg%3E" />
+    <title>TIME WAR — Incremental Arcade</title>
+  </head>
+  <body>
+    <div id="app">
+      <header id="hud">
+        <span class="hud-item">LOOP <b id="hud-loop">1</b></span>
+        <span class="hud-item">WAVE <b id="hud-wave">1</b></span>
+        <span class="hud-item hud-echo">ECHOES <b id="hud-echoes">0</b></span>
+        <span class="hud-item hud-salvage">SCRAP <b id="hud-salvage">0</b></span>
+        <span class="hud-item hud-chrono">CHRONOTONS <b id="hud-chrono">0</b></span>
+        <span class="hud-item">BEST <b id="hud-best">—</b></span>
+        <button id="btn-collapse" title="End this run now and rewind">⟲ COLLAPSE</button>
+      </header>
+      <div id="stage">
+        <canvas id="game" width="800" height="600"></canvas>
+        <div id="scanlines"></div>
+        <div id="rewind" class="hidden"></div>
+      </div>
+      <footer id="foot">
+        <span>Click to launch interceptors. You cannot win — you can only fail deeper.</span>
+        <button id="btn-wipe" title="Erase all progress">RESET TIMELINE</button>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
