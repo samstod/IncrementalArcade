@@ -42,8 +42,12 @@ Prove the hook: *lose → rewind → your ghosts fight beside you → upgrade �
   pickups; seeded mortar volleys are the early killer. Echo ships each keep
   their own cannonballs in play — this era's depth scales with fleet size.
   Unlock: wave 5 in SIEGEBREAK + 350 chronotons.
-- ☐ PRIMEVAL (Centipede / 2600) → DEBRIS FIELD (Asteroids / vector) →
-  THE RIFT (Tempest / wireframe)
+- ✅ PRIMEVAL (Centipede / Atari 2600 fat pixels, clashing palette): the
+  megapede routes around a living fern field, splits on every kill (each
+  death plants a fern), fleas reseed columns, spiders prowl the hunting
+  ground. First era with two-axis movement — the hunter roams the lower
+  rows and autothrows spears. Unlock: wave 5 in BROADSIDE + 800 chronotons.
+- ☐ DEBRIS FIELD (Asteroids / vector) → THE RIFT (Tempest / wireframe)
 
 ## M6 — Idle layer
 - Parallel Simulation: unattended eras replay best Echo set, banking Salvage

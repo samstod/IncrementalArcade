@@ -12,6 +12,7 @@ import { mcInit, mcStep, projPos, GROUND, type McStats } from '../src/eras/missi
 import { flakInit, flakStep, planePos, type FlakStats } from '../src/eras/flakAlley/sim';
 import { siegeInit, siegeStep, unitPos, type SiegeStats } from '../src/eras/siegebreak/sim';
 import { broadInit, broadStep, mortarY, BW as BROAD_W, type BroadStats } from '../src/eras/broadside/sim';
+import { primevalInit, primevalStep, HUNTER_TOP, PH as PRIM_H, type PrimevalStats } from '../src/eras/primeval/sim';
 import type { InputEvent } from '../src/core/recorder';
 
 const RUN = process.env.BALANCE === '1';
@@ -79,6 +80,20 @@ function broadBot(reactEvery: number) {
   };
 }
 
+function primevalBot(reactEvery: number) {
+  return (state: ReturnType<typeof primevalInit>, t: number): InputEvent[] => {
+    if (t % reactEvery !== 0) return [];
+    // Stand under the lowest pede segment; hug the camp row.
+    let best: { x: number; y: number } | null = null;
+    for (const seg of state.segments) {
+      if (!seg.alive) continue;
+      if (!best || seg.y > best.y) best = seg;
+    }
+    const y = Math.min(PRIM_H - 8, HUNTER_TOP + 14);
+    return [{ t, x: best ? best.x : 80, y }];
+  };
+}
+
 interface Probe<S> {
   name: string;
   init: () => S;
@@ -106,6 +121,8 @@ const SIEGE_T0: SiegeStats = { reload: 78, boltDamage: 1, pierce: 0, moveSpeed: 
 const SIEGE_MID: SiegeStats = { reload: 50, boltDamage: 3, pierce: 2, moveSpeed: 6.4, gateMaxHp: 16, merlonMaxHp: 8, echoMult: 0.7, salvageMult: 1 };
 const BROAD_T0: BroadStats = { ballDamage: 1, halfWidth: 34, paddleSpeed: 5, hullMaxHp: 10, reload: 180, maxBalls: 2, echoMult: 0.7, salvageMult: 1 };
 const BROAD_MID: BroadStats = { ballDamage: 3, halfWidth: 49, paddleSpeed: 8.3, hullMaxHp: 16, reload: 126, maxBalls: 3, echoMult: 0.7, salvageMult: 1 };
+const PRIM_T0: PrimevalStats = { maxSpears: 1, spearSpeed: 3, spearDamage: 1, fernDamage: 1, tribeMaxHp: 8, hunterSpeed: 2, echoMult: 0.7, salvageMult: 1 };
+const PRIM_MID: PrimevalStats = { maxSpears: 2, spearSpeed: 4.5, spearDamage: 3, fernDamage: 2, tribeMaxHp: 14, hunterSpeed: 3.2, echoMult: 0.7, salvageMult: 1 };
 
 describe.runIf(RUN)('balance report', () => {
   it('prints death waves per era and tier', () => {
@@ -122,6 +139,9 @@ describe.runIf(RUN)('balance report', () => {
       run({ name: 'BROAD   t0  casual', init: () => broadInit(4, BROAD_T0, 1), step: broadStep, bot: broadBot(18), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
       run({ name: 'BROAD   t0  skilled', init: () => broadInit(4, BROAD_T0, 1), step: broadStep, bot: broadBot(6), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
       run({ name: 'BROAD   mid skilled', init: () => broadInit(4, BROAD_MID, 1), step: broadStep, bot: broadBot(6), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
+      run({ name: 'PRIM    t0  casual', init: () => primevalInit(5, PRIM_T0, 1), step: primevalStep, bot: primevalBot(20), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
+      run({ name: 'PRIM    t0  skilled', init: () => primevalInit(5, PRIM_T0, 1), step: primevalStep, bot: primevalBot(8), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
+      run({ name: 'PRIM    mid skilled', init: () => primevalInit(5, PRIM_MID, 1), step: primevalStep, bot: primevalBot(8), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
     ];
     console.log('\n' + lines.join('\n') + '\n');
   }, 120_000);
