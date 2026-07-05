@@ -36,8 +36,14 @@ Prove the hook: *lose → rewind → your ghosts fight beside you → upgrade �
 - ✅ SIEGEBREAK (Invaders / parchment-woodcut): formation march with the
   classic accelerando, aimed arrow volleys vs merlons + gate, piercing
   ballista bolts. Unlock: wave 5 in FLAK ALLEY + 150 chronotons.
-- ☐ BROADSIDE (Breakout / 16-bit) → PRIMEVAL (Centipede / 2600) →
-  DEBRIS FIELD (Asteroids / vector) → THE RIFT (Tempest / wireframe)
+- ✅ BROADSIDE (Breakout / 16-bit Amiga banded-gradient painterly): the
+  fortress wall grows a course per wave and settles toward your blockade
+  line; powder kegs chain, flotsam bricks drop grapeshot/broad-hull/coin
+  pickups; seeded mortar volleys are the early killer. Echo ships each keep
+  their own cannonballs in play — this era's depth scales with fleet size.
+  Unlock: wave 5 in SIEGEBREAK + 350 chronotons.
+- ☐ PRIMEVAL (Centipede / 2600) → DEBRIS FIELD (Asteroids / vector) →
+  THE RIFT (Tempest / wireframe)
 
 ## M6 — Idle layer
 - Parallel Simulation: unattended eras replay best Echo set, banking Salvage

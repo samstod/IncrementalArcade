@@ -11,6 +11,7 @@ import { describe, it } from 'vitest';
 import { mcInit, mcStep, projPos, GROUND, type McStats } from '../src/eras/missileCommand/sim';
 import { flakInit, flakStep, planePos, type FlakStats } from '../src/eras/flakAlley/sim';
 import { siegeInit, siegeStep, unitPos, type SiegeStats } from '../src/eras/siegebreak/sim';
+import { broadInit, broadStep, mortarY, BW as BROAD_W, type BroadStats } from '../src/eras/broadside/sim';
 import type { InputEvent } from '../src/core/recorder';
 
 const RUN = process.env.BALANCE === '1';
@@ -58,6 +59,26 @@ function siegeBot(reactEvery: number) {
   };
 }
 
+function broadBot(reactEvery: number) {
+  return (state: ReturnType<typeof broadInit>, t: number): InputEvent[] => {
+    if (t % reactEvery !== 0) return [];
+    // Dodge incoming mortars first, then chase our lowest falling ball.
+    const p = state.players[0];
+    for (const m of state.mortars) {
+      if (!m.alive) continue;
+      const y = mortarY(m, t);
+      if (y > 380 && Math.abs(m.x - p.x) < 60)
+        return [{ t, x: m.x > p.x ? Math.max(30, p.x - 120) : Math.min(BROAD_W - 30, p.x + 120), y: 0 }];
+    }
+    let best: { x: number; y: number } | null = null;
+    for (const b of state.balls) {
+      if (!b.alive || b.owner !== 0 || b.vy <= 0) continue;
+      if (!best || b.y > best.y) best = b;
+    }
+    return best ? [{ t, x: best.x, y: 0 }] : [{ t, x: BROAD_W / 2, y: 0 }];
+  };
+}
+
 interface Probe<S> {
   name: string;
   init: () => S;
@@ -83,6 +104,8 @@ const FLAK_T0: FlakStats = { cooldown: 24, shellSpeed: 2.2, damage: 1, burstRadi
 const FLAK_MID: FlakStats = { cooldown: 16, shellSpeed: 3.2, damage: 3, burstRadius: 9, carrierMaxHp: 14, barrels: 2, echoMult: 0.7, salvageMult: 1 };
 const SIEGE_T0: SiegeStats = { reload: 78, boltDamage: 1, pierce: 0, moveSpeed: 4, gateMaxHp: 10, merlonMaxHp: 4, echoMult: 0.7, salvageMult: 1 };
 const SIEGE_MID: SiegeStats = { reload: 50, boltDamage: 3, pierce: 2, moveSpeed: 6.4, gateMaxHp: 16, merlonMaxHp: 8, echoMult: 0.7, salvageMult: 1 };
+const BROAD_T0: BroadStats = { ballDamage: 1, halfWidth: 34, paddleSpeed: 5, hullMaxHp: 10, reload: 180, maxBalls: 2, echoMult: 0.7, salvageMult: 1 };
+const BROAD_MID: BroadStats = { ballDamage: 3, halfWidth: 49, paddleSpeed: 8.3, hullMaxHp: 16, reload: 126, maxBalls: 3, echoMult: 0.7, salvageMult: 1 };
 
 describe.runIf(RUN)('balance report', () => {
   it('prints death waves per era and tier', () => {
@@ -96,6 +119,9 @@ describe.runIf(RUN)('balance report', () => {
       run({ name: 'SIEGE   t0  casual', init: () => siegeInit(3, SIEGE_T0, 1), step: siegeStep, bot: siegeBot(24), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
       run({ name: 'SIEGE   t0  skilled', init: () => siegeInit(3, SIEGE_T0, 1), step: siegeStep, bot: siegeBot(10), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
       run({ name: 'SIEGE   mid skilled', init: () => siegeInit(3, SIEGE_MID, 1), step: siegeStep, bot: siegeBot(10), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
+      run({ name: 'BROAD   t0  casual', init: () => broadInit(4, BROAD_T0, 1), step: broadStep, bot: broadBot(18), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
+      run({ name: 'BROAD   t0  skilled', init: () => broadInit(4, BROAD_T0, 1), step: broadStep, bot: broadBot(6), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
+      run({ name: 'BROAD   mid skilled', init: () => broadInit(4, BROAD_MID, 1), step: broadStep, bot: broadBot(6), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
     ];
     console.log('\n' + lines.join('\n') + '\n');
   }, 120_000);
