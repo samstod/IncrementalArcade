@@ -138,7 +138,7 @@ export function primevalInit(seed: number, stats: PrimevalStats, playerCount: nu
 }
 
 function pedeSpeed(k: number): number {
-  return Math.min(2.4, 0.8 + 0.07 * k);
+  return Math.min(2.8, 0.8 + 0.09 * k);
 }
 
 function spawnPede(state: PrimevalState, len: number, dir: 1 | -1, startRow: number): void {
@@ -156,15 +156,15 @@ function spawnPede(state: PrimevalState, len: number, dir: 1 | -1, startRow: num
 
 function spawnWave(state: PrimevalState, k: number): void {
   const rng = mulberry32((state.seed ^ Math.imul(k + 1, 0x94d049bb)) >>> 0);
-  const len = Math.min(24, 8 + Math.floor(k * 0.9));
+  const len = Math.min(28, 8 + Math.floor(k * 1.1));
   const dir: 1 | -1 = rng() < 0.5 ? 1 : -1;
   spawnPede(state, len, dir, 0);
   // Deep hunts bring a second, shorter pede in from the far side.
-  if (k >= 8) spawnPede(state, Math.floor(len / 2), (dir === 1 ? -1 : 1) as 1 | -1, 1);
+  if (k >= 6) spawnPede(state, Math.floor(len / 2), (dir === 1 ? -1 : 1) as 1 | -1, 1);
 
   const start = k * WAVE_TICKS;
   // Fleas: seeded drops that replant the field.
-  const fleaCount = Math.min(9, 1 + Math.floor(k / 2));
+  const fleaCount = Math.min(12, 1 + Math.floor(k * 0.7));
   for (let i = 0; i < fleaCount; i++) {
     const plantRows: number[] = [];
     for (let r = 1; r < CAMP_ROW - 2; r++) if (rng() < 0.3) plantRows.push(r);

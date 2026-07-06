@@ -26,31 +26,31 @@ export const GLOBAL_UPGRADES: UpgradeDef[] = [
   {
     id: 'echoSlot', name: 'ECHO SLOT',
     desc: 'Past runs replayed beside you each loop',
-    baseCost: 25, costMult: 3, maxLevel: 6,
+    baseCost: 25, costMult: 4.5, maxLevel: 6,
     effect: (lv) => `${lv} echoes`,
   },
   {
     id: 'echoPower', name: 'ECHO EMPOWERMENT',
     desc: 'Echo firepower as a share of yours',
-    baseCost: 25, costMult: 2.5, maxLevel: 5,
+    baseCost: 25, costMult: 3.2, maxLevel: 5,
     effect: (lv) => `${Math.round((0.7 + 0.1 * lv) * 100)}%`,
   },
   {
     id: 'chronoComp', name: 'CHRONO COMPRESSION',
     desc: 'Chronotons earned on rewind',
-    baseCost: 20, costMult: 2.2, maxLevel: 8,
+    baseCost: 20, costMult: 3, maxLevel: 8,
     effect: (lv) => `×${(1 + 0.25 * lv).toFixed(2)}`,
   },
   {
     id: 'resonance', name: 'TEMPORAL RESONANCE',
     desc: 'Each best wave in OTHER eras boosts this era’s firepower',
-    baseCost: 75, costMult: 3, maxLevel: 5,
+    baseCost: 75, costMult: 4, maxLevel: 5,
     effect: (lv) => `+${2 * lv}% per wave`,
   },
   {
     id: 'fastForward', name: 'TEMPORAL SKIP',
     desc: 'Time compression while below your best wave',
-    baseCost: 40, costMult: 2.5, maxLevel: 3,
+    baseCost: 40, costMult: 3.2, maxLevel: 3,
     effect: (lv) => `×${1 + lv} speed`,
   },
   {
@@ -59,7 +59,33 @@ export const GLOBAL_UPGRADES: UpgradeDef[] = [
     baseCost: 50, costMult: 1, maxLevel: 1,
     effect: (lv) => (lv > 0 ? 'engaged' : 'manual'),
   },
+  {
+    id: 'chronoAccel', name: 'CHRONO ACCELERATION',
+    desc: 'Unattended timelines simulate faster on the monitor wall',
+    baseCost: 120, costMult: 5, maxLevel: 4,
+    effect: (lv) => `×${Math.pow(2, lv)} speed`,
+  },
+  {
+    id: 'echoYield', name: 'ECHO YIELD',
+    desc: 'Share of a loop’s income your unattended echoes bank',
+    baseCost: 60, costMult: 3.5, maxLevel: 6,
+    effect: (lv) => `${Math.round(idleYieldAt(lv) * 100)}%`,
+  },
 ];
+
+function idleYieldAt(lv: number): number {
+  return 0.5 * (1 + 0.25 * lv); // 50% → 125% at max: idling out-earns playing
+}
+
+/** Fraction of a loop's income banked by unattended echo runs. */
+export function idleYield(global: Levels): number {
+  return idleYieldAt(global.echoYield ?? 0);
+}
+
+/** Simulation speed multiplier for unattended (monitor-wall) timelines. */
+export function idleSpeed(global: Levels): number {
+  return Math.pow(2, global.chronoAccel ?? 0);
+}
 
 export function echoSlots(global: Levels): number {
   return global.echoSlot ?? 0;

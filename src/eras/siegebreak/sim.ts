@@ -154,7 +154,7 @@ export function siegeInit(seed: number, stats: SiegeStats, playerCount: number):
 }
 
 function rowsInWave(k: number): number {
-  return Math.min(5, 3 + Math.floor(k / 3));
+  return Math.min(6, 3 + Math.floor(k / 2));
 }
 
 function spawnWave(state: SiegeState, k: number): void {
@@ -189,7 +189,7 @@ function spawnWave(state: SiegeState, k: number): void {
 
   // Fixed volley schedule for this formation's whole assault window.
   const start = k * WAVE_TICKS;
-  const volleyCount = 10 + k * 3;
+  const volleyCount = 12 + k * 4;
   const window = WAVE_TICKS * 2.5; // formations linger past their wave
   for (let i = 0; i < volleyCount; i++) {
     state.volleys.push({
@@ -276,7 +276,7 @@ export function siegeStep(state: SiegeState, inputs: InputEvent[][]): void {
   // the faster they come (the Invaders accelerando).
   for (const f of state.formations) {
     if (f.alive <= 0) continue;
-    const speed = (0.3 + 0.9 * (1 - f.alive / f.total) + f.k * 0.02) * (f.dir as number);
+    const speed = (0.3 + 0.9 * (1 - f.alive / f.total) + f.k * 0.035) * (f.dir as number);
     f.x += speed;
     const gridW = f.cols * CELL_W;
     if (f.x < 16 || f.x + gridW > SW - 16) {

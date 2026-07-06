@@ -133,14 +133,14 @@ export function explosionRadius(e: Explosion, tick: number): number {
 
 /** Number of top-level enemy missiles in wave k (0-based). */
 function waveCount(k: number): number {
-  return Math.min(40, 4 + Math.floor(k * 1.5));
+  return Math.min(60, 4 + Math.floor(k * 2.2));
 }
 
 function spawnWave(state: McState, k: number): void {
   // Independent RNG per wave: schedule depends only on (seed, k).
   const rng = mulberry32((state.seed ^ Math.imul(k + 1, 0x9e3779b9)) >>> 0);
   const count = waveCount(k);
-  const travel = Math.max(300, 720 - k * 30);
+  const travel = Math.max(260, 700 - k * 45);
   const start = k * WAVE_TICKS;
 
   for (let i = 0; i < count; i++) {
@@ -157,8 +157,8 @@ function spawnWave(state: McState, k: number): void {
       alive: true,
       isChild: false,
     };
-    // MIRVs appear from wave 6 on.
-    if (k >= 5 && rng() < Math.min(0.5, 0.1 + k * 0.03)) {
+    // MIRVs appear from wave 4 on.
+    if (k >= 3 && rng() < Math.min(0.6, 0.15 + k * 0.04)) {
       m.splitAt = 0.25 + rng() * 0.35;
       m.splitTargets = [0, 1].map(() => {
         const ti = Math.floor(rng() * CITY_X.length);

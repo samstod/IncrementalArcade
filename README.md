@@ -28,6 +28,17 @@ npm run build    # typecheck + production build
 npm test         # determinism test suite (the replay system's safety net)
 ```
 
+## The idle layer
+
+The home screen is **CHRONO COMMAND** — a wall of CRT monitors, one per era.
+Any era where you've recorded runs keeps *simulating on its monitor while
+you're elsewhere*: your echo crew replays the fight, banks a share of each
+loop's income (ECHO YIELD), and rewinds itself forever. CHRONO ACCELERATION
+makes unattended timelines run up to ×16 — eventually idling out-earns
+playing, and entering an era is about pushing your best wave deeper (which
+makes every future ghost loop richer), not grinding income by hand. Closing
+the page banks up to 12 hours of estimated progress.
+
 ## How to play the slice
 
 Click to launch interceptors at incoming ICBMs. Protect the six cities. You

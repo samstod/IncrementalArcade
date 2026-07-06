@@ -12,7 +12,7 @@ import {
 
 export interface RewindHooks {
   onRewind: () => void;
-  onTimeline: () => void;
+  onHub: () => void;
 }
 
 let autoTimer: ReturnType<typeof setInterval> | null = null;
@@ -145,7 +145,7 @@ function render(
     </div>
     <div class="rw-actions">
       <button class="rw-go">⟲ REWIND — BEGIN LOOP ${es.loops + 1}</button>
-      <button class="rw-map">⧗ TIMELINE MAP</button>
+      <button class="rw-map">⏏ MONITOR WALL</button>
     </div>
     <div class="rw-echo-note">${
       echoesNext > 0
@@ -180,5 +180,5 @@ function render(
   }
 
   root.querySelector<HTMLButtonElement>('.rw-go')!.addEventListener('click', hooks.onRewind);
-  root.querySelector<HTMLButtonElement>('.rw-map')!.addEventListener('click', hooks.onTimeline);
+  root.querySelector<HTMLButtonElement>('.rw-map')!.addEventListener('click', hooks.onHub);
 }

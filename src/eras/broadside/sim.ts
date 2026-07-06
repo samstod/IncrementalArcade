@@ -164,9 +164,9 @@ export function broadInit(seed: number, stats: BroadStats, playerCount: number):
 
 function spawnWave(state: BroadState, k: number): void {
   const rng = mulberry32((state.seed ^ Math.imul(k + 1, 0x27d4eb2f)) >>> 0);
-  // One fresh course per wave (two late): slow enough that a good ship
-  // meaningfully thins the wall before it reaches the blockade.
-  const newRows = k === 0 ? 5 : k < 8 ? 1 : 2;
+  // One fresh course per wave, two mid-game, three deep: a good ship thins
+  // the wall early but the masons always win eventually.
+  const newRows = k === 0 ? 5 : k < 5 ? 1 : k < 10 ? 2 : 3;
 
   // The wall settles: every standing course shifts down to make room.
   for (const b of state.bricks) if (b.alive) b.row += newRows;
@@ -194,7 +194,7 @@ function spawnWave(state: BroadState, k: number): void {
   // Mortar volley schedule for this wave — timing and aim are seed-fixed.
   // Mortars are the early killer; the advancing wall is the late one.
   const start = k * WAVE_TICKS;
-  const volleys = Math.min(32, 6 + Math.round(2.4 * k));
+  const volleys = Math.min(40, 6 + 3 * k);
   for (let i = 0; i < volleys; i++) {
     state.mortarOrders.push({
       tick: start + 90 + Math.floor(rng() * (WAVE_TICKS - 120)),

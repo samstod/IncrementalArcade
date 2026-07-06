@@ -13,19 +13,19 @@ const UPGRADES: UpgradeDef[] = [
   {
     id: 'brothers', name: 'SPEAR BROTHERS',
     desc: 'Spears one hunter may have in the air',
-    baseCost: 45, costMult: 3.2, maxLevel: 2,
+    baseCost: 45, costMult: 5, maxLevel: 2,
     effect: (lv) => `${1 + lv}`,
   },
   {
     id: 'arms', name: 'QUICK ARMS',
     desc: 'Spear flight speed (faster spears = faster rethrows)',
-    baseCost: 15, costMult: 1.9, maxLevel: 8,
+    baseCost: 15, costMult: 2.7, maxLevel: 8,
     effect: (lv) => `${(3 + 0.5 * lv).toFixed(1)} px/t`,
   },
   {
     id: 'flint', name: 'SHARP FLINT',
     desc: 'Spear damage — fleas and spiders die faster',
-    baseCost: 20, costMult: 2.1, maxLevel: 4,
+    baseCost: 20, costMult: 3.0, maxLevel: 4,
     effect: (lv) => `${1 + lv}`,
   },
   {
@@ -37,19 +37,19 @@ const UPGRADES: UpgradeDef[] = [
   {
     id: 'totems', name: 'TOTEM WARDS',
     desc: 'The tribe endures more burrows and bites',
-    baseCost: 30, costMult: 2.2, maxLevel: 6,
+    baseCost: 30, costMult: 3.1, maxLevel: 6,
     effect: (lv) => `${8 + 2 * lv} HP`,
   },
   {
     id: 'feet', name: 'FLEET FEET',
     desc: 'Hunter speed across the hunting ground',
-    baseCost: 14, costMult: 1.8, maxLevel: 6,
+    baseCost: 14, costMult: 3.4, maxLevel: 6,
     effect: (lv) => `${(2 + 0.4 * lv).toFixed(1)} px/t`,
   },
   {
     id: 'salvageRig', name: 'BONE CHARMS',
     desc: 'Amber gathered per kill',
-    baseCost: 25, costMult: 2.5, maxLevel: 10,
+    baseCost: 25, costMult: 3.4, maxLevel: 10,
     effect: (lv) => `×${(1 + 0.3 * lv).toFixed(1)}`,
   },
 ];

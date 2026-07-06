@@ -49,9 +49,21 @@ Prove the hook: *lose → rewind → your ghosts fight beside you → upgrade �
   rows and autothrows spears. Unlock: wave 5 in BROADSIDE + 800 chronotons.
 - ☐ DEBRIS FIELD (Asteroids / vector) → THE RIFT (Tempest / wireframe)
 
-## M6 — Idle layer
-- Parallel Simulation: unattended eras replay best Echo set, banking Salvage
-- Offline progress on load; notification badges per era
+## M6 — Idle layer ✅
+- **Monitor wall (CHRONO COMMAND)** is now the home screen: one CRT per era
+  showing its unattended echo-loop actually simulating; locked eras show
+  unlock terms, unbuilt eras hiss static
+- Idle runners: every unattended era with recordings replays its echo crew
+  as a real background sim, banking ECHO YIELD % of each loop's salvage +
+  chronotons and self-rewinding forever
+- New timeline upgrades: **CHRONO ACCELERATION** (idle sims run ×2/×4/×8/×16
+  — the route to idling out-earning active play) and **ECHO YIELD**
+  (50% → 125% of loop income)
+- Offline progress: estimated from each era's last loop shape, capped at
+  12h, reported in a "WHILE YOU WERE GONE" collect screen
+- Economy rebalance: upgrade cost multipliers raised across every shop
+  (~1.4×) and wave difficulty ramped up hard in all five eras — active play
+  is for pushing depth, the wall is for earning
 
 ## M7 — Juice & release polish
 - SFX (per-era synth palettes), music stingers on rewind

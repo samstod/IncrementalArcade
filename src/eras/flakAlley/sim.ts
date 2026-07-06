@@ -125,14 +125,14 @@ export function bombY(b: Bomb, tick: number): number {
 export const BOOM_LIFE = 20;
 
 function planesInWave(k: number): number {
-  return Math.min(40, 4 + Math.floor(k * 1.4));
+  return Math.min(56, 4 + Math.floor(k * 2));
 }
 
 function spawnWave(state: FlakState, k: number): void {
   const rng = mulberry32((state.seed ^ Math.imul(k + 1, 0x85ebca6b)) >>> 0);
   const count = planesInWave(k);
   const start = k * WAVE_TICKS;
-  const travel = Math.max(240, 640 - k * 25);
+  const travel = Math.max(210, 620 - k * 35);
   const vy = (DECK_Y + 12) / travel;
 
   for (let i = 0; i < count; i++) {
@@ -141,7 +141,7 @@ function spawnWave(state: FlakState, k: number): void {
     const diveAt = Math.floor(travel * (0.4 + rng() * 0.4));
     const bombTicks: number[] = [];
     if (k >= 1) {
-      const n = bomber ? 2 : rng() < 0.35 ? 1 : 0;
+      const n = bomber ? 2 : rng() < 0.45 ? 1 : 0;
       for (let b = 0; b < n; b++) bombTicks.push(Math.floor(travel * (0.2 + rng() * 0.55)));
     }
     state.planes.push({

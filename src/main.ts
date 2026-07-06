@@ -1,45 +1,46 @@
-// TIME WAR — bootstrap and run orchestration.
-// Owns the play → collapse → rewind → upgrade → replay-with-echoes loop,
-// era travel via the timeline map, and input capture for both era input
-// modes ('click' fires at points; 'pointer' steers toward the cursor).
+// TIME WAR — bootstrap and orchestration.
+//
+// Two screens: the HUB (monitor wall — every unattended era's echo loop
+// simulating live and banking income) and PLAY (one era fullscreen, the
+// classic play → collapse → rewind → upgrade loop). Idle runners keep
+// stepping while you play elsewhere; offline gains are estimated on boot.
 
 import './style.css';
 import { startLoop } from './core/loop';
 import { hashString } from './core/rng';
 import { Recorder, Replayer, type InputEvent } from './core/recorder';
-import { eraById, type EraModule } from './eras/era';
+import { ERAS, eraById, type EraModule } from './eras/era';
 import {
-  echoSlots, chronotonAward, resonanceMult,
+  echoSlots, chronotonAward, resonanceMult, idleSpeed,
 } from './meta/upgrades';
 import {
   loadSave, persistSave, wipeSave, eraSave,
   MAX_STORED_RUNS, type SaveData,
 } from './meta/save';
+import { IdleRunner, applyOfflineProgress } from './meta/idle';
 import { updateHud } from './ui/hud';
 import { showRewind, hideRewind } from './ui/rewind';
-import { showTimeline, hideTimeline } from './ui/timeline';
-
-type Phase = 'playing' | 'rewind' | 'map';
+import { buildHub, isUnlocked, type HubHandle } from './ui/hub';
 
 class Game {
-  save: SaveData = loadSave();
-  era: EraModule = eraById(this.save.currentEra);
+  era: EraModule;
   state!: unknown;
   recorder!: Recorder;
   replayers: Replayer[] = [];
-  phase: Phase = 'playing';
-  phaseBeforeMap: Phase = 'playing';
-
-  // Input capture (converted to world coords per era)
+  phase: 'playing' | 'rewind' = 'playing';
   pendingClicks: { x: number; y: number }[] = [];
   pointer = { x: 0, y: 0, moved: false };
   private lastSentX = -1;
+  private lastSentY = -1;
 
   constructor(
+    eraId: string,
+    private save: SaveData,
     private ctx: CanvasRenderingContext2D,
     private rewindEl: HTMLElement,
-    private timelineEl: HTMLElement,
+    private onHub: () => void,
   ) {
+    this.era = eraById(eraId);
     this.startRun();
   }
 
@@ -59,25 +60,24 @@ class Game {
     this.recorder = new Recorder();
     this.pendingClicks = [];
     this.lastSentX = -1;
+    this.lastSentY = -1;
     this.pointer.moved = false;
     this.phase = 'playing';
     hideRewind(this.rewindEl);
-    hideTimeline(this.timelineEl);
   }
 
-  /** Live input events for this tick, per the era's input mode. */
   private liveEvents(t: number): InputEvent[] {
     const live: InputEvent[] = [];
     if (this.era.inputMode === 'click') {
       for (const c of this.pendingClicks) live.push({ t, x: c.x, y: c.y });
       this.pendingClicks = [];
     } else if (this.pointer.moved) {
-      // Steering: emit only when the target actually changed, so recordings
-      // stay tiny (a few events per sweep, not one per frame).
       const x = Math.round(this.pointer.x);
-      if (x !== this.lastSentX) {
-        live.push({ t, x, y: Math.round(this.pointer.y) });
+      const y = Math.round(this.pointer.y);
+      if (x !== this.lastSentX || y !== this.lastSentY) {
+        live.push({ t, x, y });
         this.lastSentX = x;
+        this.lastSentY = y;
       }
       this.pointer.moved = false;
     }
@@ -87,26 +87,20 @@ class Game {
 
   step(): void {
     if (this.phase !== 'playing') return;
-    const state = this.state;
-    const t = (state as { tick: number }).tick;
-
+    const t = (this.state as { tick: number }).tick;
     const inputs: InputEvent[][] = [this.liveEvents(t)];
     for (const rp of this.replayers) inputs.push(rp.expired(t) ? [] : rp.at(t));
-
-    this.era.step(state, inputs);
-    if (this.era.isOver(state)) this.endRun(true);
+    this.era.step(this.state, inputs);
+    if (this.era.isOver(this.state)) this.endRun(true);
   }
 
-  /** TEMPORAL SKIP: compress time while still below this era's best wave. */
   fastForwardActive(): boolean {
     if (this.phase !== 'playing') return false;
     const lv = this.save.globalLevels.fastForward ?? 0;
     if (lv === 0) return false;
-    const best = eraSave(this.save, this.era.id).bestWave;
-    return this.era.liveInfo(this.state).wave < best;
+    return this.era.liveInfo(this.state).wave < eraSave(this.save, this.era.id).bestWave;
   }
 
-  /** One render-frame's worth of simulation (1× or fast-forwarded). */
   stepFrame(): void {
     const mult = this.fastForwardActive()
       ? 1 + (this.save.globalLevels.fastForward ?? 0)
@@ -114,11 +108,10 @@ class Game {
     for (let i = 0; i < mult && this.phase === 'playing'; i++) this.step();
   }
 
-  /** Manual early rewind ("collapse the timeline"). */
-  collapse(): void {
+  collapse(showOverlay = true): void {
     if (this.phase !== 'playing') return;
     this.era.forceEnd(this.state);
-    this.endRun(true);
+    this.endRun(showOverlay);
   }
 
   private endRun(showOverlay: boolean): void {
@@ -141,37 +134,9 @@ class Game {
     if (showOverlay) {
       showRewind(this.rewindEl, this.era, summary, gain, this.save, {
         onRewind: () => this.startRun(),
-        onTimeline: () => this.openTimeline(),
+        onHub: this.onHub,
       });
     }
-  }
-
-  openTimeline(): void {
-    if (this.phase !== 'map') this.phaseBeforeMap = this.phase;
-    this.phase = 'map'; // pauses the sim
-    showTimeline(this.timelineEl, this.save, {
-      onTravel: (id) => this.travel(id),
-      onClose: () => this.closeTimeline(),
-    });
-  }
-
-  private closeTimeline(): void {
-    hideTimeline(this.timelineEl);
-    this.phase = this.phaseBeforeMap;
-  }
-
-  travel(eraId: string): void {
-    if (eraId === this.era.id) return this.closeTimeline();
-    // Traveling mid-run collapses the current run first (it still records,
-    // still awards — the loop just ends early).
-    if (this.phaseBeforeMap === 'playing' && this.phase === 'map') {
-      this.era.forceEnd(this.state);
-      this.endRun(false);
-    }
-    this.save.currentEra = eraId;
-    this.era = eraById(eraId);
-    persistSave(this.save);
-    this.startRun();
   }
 
   render(): void {
@@ -186,52 +151,170 @@ class Game {
   }
 }
 
-function main(): void {
-  const canvas = document.getElementById('game') as HTMLCanvasElement;
-  const ctx = canvas.getContext('2d')!;
-  const game = new Game(
-    ctx,
-    document.getElementById('rewind')!,
-    document.getElementById('timeline')!,
-  );
+class App {
+  save: SaveData = loadSave();
+  screen: 'hub' | 'play' = 'hub';
+  game: Game | null = null;
+  runners = new Map<string, IdleRunner>();
+  hub!: HubHandle;
+  private frame = 0;
+  private monitorCursor = 0;
 
-  const toWorld = (e: PointerEvent) => {
-    const rect = canvas.getBoundingClientRect();
-    return {
-      x: ((e.clientX - rect.left) / rect.width) * game.era.width,
-      y: ((e.clientY - rect.top) / rect.height) * game.era.height,
+  private hubEl = document.getElementById('hub')!;
+  private playEl = document.getElementById('playview')!;
+  private rewindEl = document.getElementById('rewind')!;
+  private offlineEl = document.getElementById('offline')!;
+  private canvas = document.getElementById('game') as HTMLCanvasElement;
+  private ctx = this.canvas.getContext('2d')!;
+
+  constructor() {
+    // Offline progress first, so the hub renders post-gain numbers.
+    const gains = applyOfflineProgress(this.save, ERAS, Date.now());
+    persistSave(this.save);
+
+    for (const era of ERAS) {
+      if (!isUnlocked(era, this.save)) continue;
+      const runner = new IdleRunner(era, this.save);
+      runner.start();
+      this.runners.set(era.id, runner);
+    }
+
+    this.hub = buildHub(this.hubEl, this.save, { onEnter: (id) => this.enter(id) });
+    this.wireHubFooter();
+    if (gains.length > 0) this.showOfflineReport(gains);
+    this.wireInput();
+    startLoop(
+      () => this.stepAll(),
+      () => this.renderAll(),
+    );
+  }
+
+  private wireHubFooter(): void {
+    // The wipe button is rebuilt with the hub DOM; delegate from the root.
+    this.hubEl.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).id !== 'btn-wipe') return;
+      if (confirm('Erase the entire timeline? All progress and echoes are lost.')) {
+        wipeSave();
+        location.reload();
+      }
+    });
+  }
+
+  private showOfflineReport(gains: ReturnType<typeof applyOfflineProgress>): void {
+    const rows = gains
+      .map(
+        (g) =>
+          `<div class="off-row"><b>${g.title}</b> — ${g.loops} loops · +${g.salvage} ${g.salvageName} · +${g.chronotons} ⧖</div>`,
+      )
+      .join('');
+    this.offlineEl.innerHTML = `
+      <div class="off-card">
+        <h2>WHILE YOU WERE GONE</h2>
+        <div class="off-sub">Your echoes kept fighting.</div>
+        ${rows}
+        <button class="off-ok">COLLECT</button>
+      </div>
+    `;
+    this.offlineEl.classList.remove('hidden');
+    this.offlineEl.querySelector('.off-ok')!.addEventListener('click', () => {
+      this.offlineEl.classList.add('hidden');
+      this.hub.rebuild();
+    });
+  }
+
+  enter(eraId: string): void {
+    this.save.currentEra = eraId;
+    persistSave(this.save);
+    this.runners.get(eraId)?.stop(); // you ARE this timeline now
+    this.screen = 'play';
+    this.hubEl.classList.add('hidden');
+    this.playEl.classList.remove('hidden');
+    this.game = new Game(eraId, this.save, this.ctx, this.rewindEl, () => this.toHub());
+  }
+
+  toHub(): void {
+    if (this.game && this.game.phase === 'playing') this.game.collapse(false);
+    const eraId = this.game?.era.id;
+    this.game = null;
+    hideRewind(this.rewindEl);
+    if (eraId) {
+      // Restart the runner so it replays the newest recordings.
+      let runner = this.runners.get(eraId);
+      if (!runner) {
+        runner = new IdleRunner(eraById(eraId), this.save);
+        this.runners.set(eraId, runner);
+      }
+      runner.start();
+    }
+    // Newly stabilized eras need runners too.
+    for (const era of ERAS) {
+      if (isUnlocked(era, this.save) && !this.runners.has(era.id)) {
+        const runner = new IdleRunner(era, this.save);
+        runner.start();
+        this.runners.set(era.id, runner);
+      }
+    }
+    this.screen = 'hub';
+    this.playEl.classList.add('hidden');
+    this.hubEl.classList.remove('hidden');
+    this.hub.rebuild();
+  }
+
+  private stepAll(): void {
+    if (this.screen === 'play' && this.game) this.game.stepFrame();
+    const speed = idleSpeed(this.save.globalLevels);
+    const activeEra = this.screen === 'play' ? this.game?.era.id : null;
+    for (const runner of this.runners.values()) {
+      if (runner.era.id === activeEra) continue;
+      runner.step(speed);
+    }
+    this.frame++;
+    if (this.frame % 600 === 0) persistSave(this.save); // every ~10s
+  }
+
+  private renderAll(): void {
+    if (this.screen === 'play') {
+      this.game?.render();
+      return;
+    }
+    // Round-robin one monitor per frame (~12fps each), stats once a second.
+    const live = [...this.runners.values()].filter((r) => r.state);
+    if (live.length > 0) {
+      const runner = live[this.monitorCursor % live.length];
+      this.monitorCursor++;
+      const ctx = this.hub.screens.get(runner.era.id);
+      if (ctx) runner.era.render(ctx, runner.state);
+    }
+    if (this.frame % 60 === 0) this.hub.updateStats(this.runners);
+  }
+
+  private wireInput(): void {
+    const toWorld = (e: PointerEvent) => {
+      const rect = this.canvas.getBoundingClientRect();
+      const era = this.game!.era;
+      return {
+        x: ((e.clientX - rect.left) / rect.width) * era.width,
+        y: ((e.clientY - rect.top) / rect.height) * era.height,
+      };
     };
-  };
+    this.canvas.addEventListener('pointerdown', (e) => {
+      if (this.screen !== 'play' || !this.game || this.game.phase !== 'playing') return;
+      const p = toWorld(e);
+      if (this.game.era.inputMode === 'click') this.game.pendingClicks.push(p);
+      else this.game.pointer = { ...p, moved: true };
+    });
+    this.canvas.addEventListener('pointermove', (e) => {
+      if (this.screen !== 'play' || !this.game || this.game.phase !== 'playing') return;
+      if (this.game.era.inputMode !== 'pointer') return;
+      this.game.pointer = { ...toWorld(e), moved: true };
+    });
 
-  canvas.addEventListener('pointerdown', (e) => {
-    if (game.phase !== 'playing') return;
-    const p = toWorld(e);
-    if (game.era.inputMode === 'click') game.pendingClicks.push(p);
-    else {
-      game.pointer = { ...p, moved: true };
-    }
-  });
-  canvas.addEventListener('pointermove', (e) => {
-    if (game.phase !== 'playing' || game.era.inputMode !== 'pointer') return;
-    game.pointer = { ...toWorld(e), moved: true };
-  });
-
-  document.getElementById('btn-collapse')!.addEventListener('click', () => game.collapse());
-  document.getElementById('btn-timeline')!.addEventListener('click', () => {
-    if (game.phase === 'map') return;
-    game.openTimeline();
-  });
-  document.getElementById('btn-wipe')!.addEventListener('click', () => {
-    if (confirm('Erase the entire timeline? All progress and echoes are lost.')) {
-      wipeSave();
-      location.reload();
-    }
-  });
-
-  startLoop(
-    () => game.stepFrame(),
-    () => game.render(),
-  );
+    document.getElementById('btn-collapse')!.addEventListener('click', () => this.game?.collapse());
+    document.getElementById('btn-hub')!.addEventListener('click', () => this.toHub());
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) persistSave(this.save);
+    });
+  }
 }
 
-main();
+new App();

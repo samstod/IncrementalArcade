@@ -13,6 +13,10 @@ export interface EraSave {
   bestWave: number;
   loops: number;
   recordings: RunRecording[]; // most recent first
+  // Shape of the last completed idle loop, for offline estimation.
+  idleTicks?: number;
+  idleSalvage?: number;
+  idleChrono?: number;
 }
 
 export interface SaveData {
@@ -22,6 +26,7 @@ export interface SaveData {
   currentEra: string;
   keys: string[]; // stabilized (unlocked) era ids beyond the starters
   eras: Record<string, EraSave>;
+  lastSeen?: number; // wall-clock ms at last persist, for offline progress
 }
 
 const KEY = 'timewar-save-v1'; // storage key kept stable across versions
@@ -95,6 +100,7 @@ export function loadSave(): SaveData {
 
 export function persistSave(data: SaveData): void {
   try {
+    data.lastSeen = Date.now();
     localStorage.setItem(KEY, JSON.stringify(data));
   } catch {
     // Storage full or unavailable: the game keeps running, progress just
