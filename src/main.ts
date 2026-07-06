@@ -197,12 +197,20 @@ class App {
   }
 
   private wireHubFooter(): void {
-    // The wipe button is rebuilt with the hub DOM; delegate from the root.
+    // Footer buttons are rebuilt with the hub DOM; delegate from the root.
     this.hubEl.addEventListener('click', (e) => {
-      if ((e.target as HTMLElement).id !== 'btn-wipe') return;
-      if (confirm('Erase the entire timeline? All progress and echoes are lost.')) {
-        wipeSave();
-        location.reload();
+      const id = (e.target as HTMLElement).id;
+      if (id === 'btn-wipe') {
+        if (confirm('Erase the entire timeline? All progress and echoes are lost.')) {
+          wipeSave();
+          location.reload();
+        }
+      } else if (id === 'btn-sandbox') {
+        persistSave(this.save);
+        const url = new URL(location.href);
+        if (SANDBOX) url.searchParams.delete('sandbox');
+        else url.searchParams.set('sandbox', '1');
+        location.href = url.toString();
       }
     });
   }

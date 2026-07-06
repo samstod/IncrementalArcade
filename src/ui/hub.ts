@@ -50,7 +50,12 @@ export function buildHub(root: HTMLElement, save: SaveData, hooks: HubHooks): Hu
       <div class="hub-grid"></div>
       <footer class="hub-foot">
         <span>Unattended timelines replay your echoes and bank income. Enter one to push deeper.</span>
-        <button id="btn-wipe">RESET TIMELINE</button>
+        <span class="hub-foot-btns">
+          <button id="btn-sandbox" title="Toggle playtest mode: every era enterable, save untouched">
+            SANDBOX: ${hooks.sandbox ? 'ON' : 'OFF'}
+          </button>
+          <button id="btn-wipe">RESET TIMELINE</button>
+        </span>
       </footer>
     `;
     const grid = root.querySelector<HTMLElement>('.hub-grid')!;
