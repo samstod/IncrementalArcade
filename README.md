@@ -30,6 +30,15 @@ npm run build    # typecheck + production build
 npm test         # determinism test suite (the replay system's safety net)
 ```
 
+**Playtest all seven games instantly:** open the dev URL with `?sandbox`
+appended (e.g. `http://localhost:5173/?sandbox`) — every era is enterable
+without keys or depth gates, and nothing sandbox-only touches your save.
+
+Saves from older prototype builds are automatically discarded on load
+(the sim, balance, and economy have changed too much for them to be
+meaningful) — if the game ever looks stuck after pulling new code, it will
+fix itself on refresh, or press RESET TIMELINE on the monitor wall.
+
 ## The idle layer
 
 The home screen is **CHRONO COMMAND** — a wall of CRT monitors, one per era.

@@ -9,6 +9,8 @@ import type { IdleRunner } from '../meta/idle';
 
 export interface HubHooks {
   onEnter: (eraId: string) => void;
+  /** Sandbox: every era is enterable regardless of keys (playtesting). */
+  sandbox?: boolean;
 }
 
 export interface HubHandle {
@@ -42,6 +44,7 @@ export function buildHub(root: HTMLElement, save: SaveData, hooks: HubHooks): Hu
           <span class="hub-chrono">⧖ <b id="hub-chrono">${save.chronotons}</b> CHRONOTONS</span>
           <span>${echoSlots(save.globalLevels)} ECHO SLOTS</span>
           <span>IDLE ×${accel} · YIELD ${yieldPct}%</span>
+          ${hooks.sandbox ? '<span class="hub-sandbox">SANDBOX — ALL ERAS OPEN</span>' : ''}
         </div>
       </header>
       <div class="hub-grid"></div>
@@ -54,7 +57,7 @@ export function buildHub(root: HTMLElement, save: SaveData, hooks: HubHooks): Hu
 
     for (const era of ERAS) {
       const es = eraSave(save, era.id);
-      const unlocked = isUnlocked(era, save);
+      const unlocked = hooks.sandbox || isUnlocked(era, save);
       const mon = document.createElement('div');
 
       if (unlocked) {

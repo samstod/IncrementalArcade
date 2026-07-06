@@ -219,6 +219,11 @@ canvas {
   margin-top: 4px;
 }
 .hub-chrono b { color: var(--neon-purple); text-shadow: 0 0 8px var(--neon-purple); }
+.hub-sandbox {
+  color: var(--neon-amber);
+  text-shadow: 0 0 8px var(--neon-amber);
+  animation: ff-pulse 1s infinite alternate;
+}
 
 .hub-grid {
   display: grid;

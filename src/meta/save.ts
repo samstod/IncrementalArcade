@@ -19,8 +19,13 @@ export interface EraSave {
   idleChrono?: number;
 }
 
+// Prototype-era saves (v1/v2) predate several sim, balance, and economy
+// overhauls — their recordings and levels are meaningless now. Any save
+// below the current schema is discarded on load: a clean restart.
+export const SCHEMA = 3;
+
 export interface SaveData {
-  v: 2;
+  v: typeof SCHEMA;
   chronotons: number;
   globalLevels: Levels;
   currentEra: string;
@@ -37,7 +42,7 @@ export function emptyEraSave(): EraSave {
 
 export function defaultSave(): SaveData {
   return {
-    v: 2,
+    v: SCHEMA,
     chronotons: 0,
     globalLevels: {},
     currentEra: 'defcon',
@@ -55,44 +60,13 @@ export function totalLoops(save: SaveData): number {
   return Object.values(save.eras).reduce((n, e) => n + e.loops, 0);
 }
 
-interface SaveV1 {
-  v: 1;
-  chronotons: number;
-  salvage: number;
-  eraLevels: Levels;
-  globalLevels: Levels;
-  loop: number;
-  bestWave: number;
-  recordings: RunRecording[];
-}
-
-function migrateV1(old: SaveV1): SaveData {
-  return {
-    v: 2,
-    chronotons: old.chronotons ?? 0,
-    globalLevels: old.globalLevels ?? {},
-    currentEra: 'defcon',
-    keys: [],
-    eras: {
-      defcon: {
-        salvage: old.salvage ?? 0,
-        levels: old.eraLevels ?? {},
-        bestWave: old.bestWave ?? 0,
-        loops: old.loop ?? 0,
-        recordings: old.recordings ?? [],
-      },
-    },
-  };
-}
-
 export function loadSave(): SaveData {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return defaultSave();
     const data = JSON.parse(raw) as { v: number };
-    if (data.v === 1) return migrateV1(data as SaveV1);
-    if (data.v === 2) return { ...defaultSave(), ...(data as SaveData) };
-    return defaultSave();
+    if (data.v === SCHEMA) return { ...defaultSave(), ...(data as SaveData) };
+    return defaultSave(); // older prototype saves: clean restart
   } catch {
     return defaultSave();
   }

@@ -151,6 +151,10 @@ class Game {
   }
 }
 
+// Playtest sandbox: append ?sandbox to the URL and every era is enterable
+// without keys or depth gates. Nothing sandbox-only is written to the save.
+const SANDBOX = new URLSearchParams(location.search).has('sandbox');
+
 class App {
   save: SaveData = loadSave();
   screen: 'hub' | 'play' = 'hub';
@@ -173,13 +177,16 @@ class App {
     persistSave(this.save);
 
     for (const era of ERAS) {
-      if (!isUnlocked(era, this.save)) continue;
+      if (!SANDBOX && !isUnlocked(era, this.save)) continue;
       const runner = new IdleRunner(era, this.save);
       runner.start();
       this.runners.set(era.id, runner);
     }
 
-    this.hub = buildHub(this.hubEl, this.save, { onEnter: (id) => this.enter(id) });
+    this.hub = buildHub(this.hubEl, this.save, {
+      onEnter: (id) => this.enter(id),
+      sandbox: SANDBOX,
+    });
     this.wireHubFooter();
     if (gains.length > 0) this.showOfflineReport(gains);
     this.wireInput();
@@ -248,7 +255,7 @@ class App {
     }
     // Newly stabilized eras need runners too.
     for (const era of ERAS) {
-      if (isUnlocked(era, this.save) && !this.runners.has(era.id)) {
+      if ((SANDBOX || isUnlocked(era, this.save)) && !this.runners.has(era.id)) {
         const runner = new IdleRunner(era, this.save);
         runner.start();
         this.runners.set(era.id, runner);
