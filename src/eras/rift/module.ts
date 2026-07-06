@@ -65,7 +65,7 @@ export const riftEra: EraModule<RiftState, RiftStats> = {
   flavor: 'the source of the Unraveling; hold the seal, hold everything',
   salvageName: 'FRAGMENTS',
   inputMode: 'pointer',
-  overlay: 'crt',
+  overlay: 'none',
   width: RW,
   height: RH,
   unlock: { eraId: 'debris', wave: 5, cost: 5000 },

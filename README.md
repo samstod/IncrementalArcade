@@ -11,8 +11,8 @@ ever fired, empowered by every upgrade you've bought since.
 as a castle siege, woven Bayeux-style tapestry), *1720 BROADSIDE* (Breakout as an
 aged naval oil painting in a gilt frame),
 *PREHISTORY PRIMEVAL* (Centipede as an ochre-and-charcoal cave painting), *2286 DEBRIS
-FIELD* (Asteroids in glowing vector line art), and *END OF TIME — THE RIFT*
-(Tempest in color-cycling synthwave wireframe, the endgame) — with the full
+FIELD* (Asteroids on a holographic tactical display), and *END OF TIME — THE RIFT*
+(Tempest in a well woven from all six earlier mediums, unraveling into static — the endgame) — with the full
 lose → rewind → echo-replay → upgrade loop, the CHRONO COMMAND monitor-wall
 idle layer, Temporal Resonance cross-era boosts, and the TEMPORAL SKIP /
 AUTO-REWIND quality-of-life layer. Era chain: each era's wave 5 unlocks the

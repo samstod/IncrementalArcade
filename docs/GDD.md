@@ -75,8 +75,8 @@ Every era is a shooter/defense game **on purpose**: N simultaneous player instan
 | 3 | 1250 — Medieval | **SIEGEBREAK** | Space Invaders | Woven tapestry (Bayeux-style): wool fills, stitched outlines, border bands, Latin captions |
 | 4 | 1720 — Age of Sail | **BROADSIDE** | Breakout / Arkanoid | Aged naval oil painting: gilt frame, brass plaque, brushwork + craquelure varnish |
 | 5 | Prehistory | **PRIMEVAL** | Centipede | Cave painting: ochre + charcoal on torch-lit rock, handprints for lives |
-| 6 | 2286 — Far Future | **DEBRIS FIELD** | Asteroids | White/neon vector line art with glow |
-| 7 | The End of Time | **THE RIFT** | Tempest | Color-cycling synthwave wireframe vector |
+| 6 | 2286 — Far Future | **DEBRIS FIELD** | Asteroids | Holographic tactical display: translucent projected light, chromatic fringing, scan band, glitch slips |
+| 7 | The End of Time | **THE RIFT** | Tempest | The Unraveling itself: the well is banded in all six earlier mediums, dissolving into raw static at the singularity |
 
 ### Era 1 — DEFCON LOOP (1983, Cold War) — *the vertical slice*
 Missile Command. Six cities under endless ICBM rain; click to launch interceptors from your batteries; explosions destroy warheads. Later waves add splitting MIRVs, faster warheads, denser volleys. **Echo flavor:** ghost missile batteries shimmer beside yours, firing every interceptor their run ever fired.
@@ -174,8 +174,8 @@ interface EraModule<S> {
 - **SIEGEBREAK:** pre-rendered linen (weave lines, dye bands, slubs) with Bayeux border bands (gold diamonds, stitched birds); all outlines drawn with `setLineDash` so they read as thread; impacts unravel as loops of loose red thread; captions in faux-Latin, waves in Roman numerals.
 - **BROADSIDE:** Turner-ish glazed sky and dark sea painted fresh each frame, then finished under pre-rendered brushwork (soft directional strokes), craquelure varnish cracks, a wear-worn gilt frame with gadrooned beads, and a brass plaque reading “The Bombardment of the Fortress” — 1720, oil on canvas.
 - **PRIMEVAL:** pre-rendered rock wall (mineral blotches, cracks, vignette) with breathing firelight; every figure daubed twice with a small offset for chalky edges; the pede is a charcoal serpent, hunters are Lascaux stick figures, echoes are white-clay ancestor spirits, and tribe HP is a row of ochre handprints.
-- **DEBRIS FIELD:** pure stroked paths, white core + colored glow, wraparound draw at edges.
-- **THE RIFT:** projected 3D well (precomputed lane geometry), HSL color-cycling strokes.
+- **DEBRIS FIELD:** every stroke is projected light — ghosted twice in warm/cool offsets for chromatic fringe, cyan for friendlies and threat amber for wrecks, red proximity brackets near the colony, a scan band sweeping the tank, and glitch slips where the projector stutters (a slice of the frame self-blits sideways). Labels: CV-EXODUS, TAC-HOLO, CONTACTS.
+- **THE RIFT:** the art thesis ending — the sixteen lanes are banded in the six mediums of the earlier eras (cave ochre, tapestry wool with dashed stitching, oil gold, newsreel silver, phosphor green, hologram cyan), each drawn in that medium's stroke language. Rails and rings desaturate and die toward the center, where the singularity is raw per-frame static: the death of representation. Creatures climb OUT of the noise, gray and half-formed, taking on their lane's medium as they rise. The player is plain white — belonging to no medium. Broken seal segments collapse into static dashes.
 
 ---
 
