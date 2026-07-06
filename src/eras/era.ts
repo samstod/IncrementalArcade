@@ -31,6 +31,12 @@ export interface EraModule<S = unknown, St = unknown> {
   salvageName: string; // themed era currency
   /** 'click' eras fire at points; 'pointer' eras steer toward the cursor. */
   inputMode: 'click' | 'pointer';
+  /**
+   * Screen dressing: 'crt' eras get the scanline/vignette overlay (they are
+   * literally screens — phosphor, vector); 'none' for physical media like
+   * paint, thread, and film, which carry their own texture.
+   */
+  overlay: 'crt' | 'none';
   /** World coordinate space inputs are quantized into. */
   width: number;
   height: number;

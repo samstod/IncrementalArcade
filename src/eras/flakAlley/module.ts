@@ -63,6 +63,7 @@ export const flakEra: EraModule<FlakState, FlakStats> = {
   flavor: 'dive bombers vs one carrier deck; steer, the gun never stops',
   salvageName: 'CASINGS',
   inputMode: 'pointer',
+  overlay: 'none',
   width: FW,
   height: FH,
   unlock: { eraId: 'defcon', wave: 5, cost: 60 },

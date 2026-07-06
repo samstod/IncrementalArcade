@@ -63,6 +63,7 @@ export const defconEra: EraModule<McState, McStats> = {
   flavor: 'six cities, endless ICBM rain, no victory condition',
   salvageName: 'SCRAP',
   inputMode: 'click',
+  overlay: 'crt',
   width: W,
   height: H,
   unlock: null,

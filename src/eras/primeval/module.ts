@@ -61,6 +61,7 @@ export const primevalEra: EraModule<PrimevalState, PrimevalStats> = {
   flavor: 'something long is coming downhill, and it splits when you cut it',
   salvageName: 'AMBER',
   inputMode: 'pointer',
+  overlay: 'none',
   width: PW,
   height: PH,
   unlock: { eraId: 'broadside', wave: 5, cost: 800 },

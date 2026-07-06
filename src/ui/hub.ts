@@ -72,7 +72,7 @@ export function buildHub(root: HTMLElement, save: SaveData, hooks: HubHooks): Hu
           <div class="mon-screen">
             <canvas width="${era.width}" height="${era.height}"></canvas>
             ${idle ? '' : `<div class="mon-msg">NO ECHO RECORDING<br/>ENTER TO FIGHT — YOUR RUNS BECOME THE GARRISON</div>`}
-            <div class="mon-scan"></div>
+            ${era.overlay === 'crt' ? '<div class="mon-scan"></div>' : ''}
           </div>
           <div class="mon-label">${era.title}</div>
           <div class="mon-stats" data-era="${era.id}">${

@@ -63,6 +63,7 @@ export const debrisEra: EraModule<DebrisState, DebrisStats> = {
   flavor: 'the fleet is already dead; the wrecks are still incoming',
   salvageName: 'ALLOY',
   inputMode: 'pointer',
+  overlay: 'crt',
   width: DW,
   height: DH,
   unlock: { eraId: 'primeval', wave: 5, cost: 2000 },

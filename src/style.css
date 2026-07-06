@@ -80,7 +80,8 @@ canvas {
   background: #050510;
 }
 
-/* CRT overlay: scanlines + vignette, purely cosmetic */
+/* CRT overlay: scanlines + vignette, only for eras that are screens */
+#scanlines.hidden { display: none; }
 #scanlines {
   position: absolute;
   inset: 0;

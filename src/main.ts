@@ -244,6 +244,9 @@ class App {
     this.screen = 'play';
     this.hubEl.classList.add('hidden');
     this.playEl.classList.remove('hidden');
+    // CRT dressing only for eras that are literally screens.
+    document.getElementById('scanlines')!
+      .classList.toggle('hidden', eraById(eraId).overlay !== 'crt');
     this.game = new Game(eraId, this.save, this.ctx, this.rewindEl, () => this.toHub());
   }
 

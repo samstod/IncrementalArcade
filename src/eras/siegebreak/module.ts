@@ -63,6 +63,7 @@ export const siegeEra: EraModule<SiegeState, SiegeStats> = {
   flavor: 'ranks of steel advance on the wall; the gate is all that matters',
   salvageName: 'TIMBER',
   inputMode: 'pointer',
+  overlay: 'none',
   width: SW,
   height: SH,
   unlock: { eraId: 'flak', wave: 5, cost: 150 },

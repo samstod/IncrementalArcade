@@ -63,6 +63,7 @@ export const broadsideEra: EraModule<BroadState, BroadStats> = {
   flavor: 'a fortress. a cannonball. arithmetic — and the wall grows back',
   salvageName: 'DOUBLOONS',
   inputMode: 'pointer',
+  overlay: 'none',
   width: BW,
   height: BH,
   unlock: { eraId: 'siege', wave: 5, cost: 350 },
