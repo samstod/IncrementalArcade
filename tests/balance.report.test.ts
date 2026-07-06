@@ -14,6 +14,7 @@ import { siegeInit, siegeStep, unitPos, type SiegeStats } from '../src/eras/sieg
 import { broadInit, broadStep, mortarY, BW as BROAD_W, type BroadStats } from '../src/eras/broadside/sim';
 import { primevalInit, primevalStep, HUNTER_TOP, PH as PRIM_H, type PrimevalStats } from '../src/eras/primeval/sim';
 import { debrisInit, debrisStep, CX as DCX, CY as DCY, type DebrisStats } from '../src/eras/debrisfield/sim';
+import { riftInit, riftStep, LANES, type RiftStats } from '../src/eras/rift/sim';
 import type { InputEvent } from '../src/core/recorder';
 
 const RUN = process.env.BALANCE === '1';
@@ -113,6 +114,21 @@ function debrisBot(reactEvery: number) {
   };
 }
 
+function riftBot(reactEvery: number) {
+  return (state: ReturnType<typeof riftInit>, t: number): InputEvent[] => {
+    if (t % reactEvery !== 0) return [];
+    // Park over the lane of the highest creature in the well.
+    let best: { lane: number; z: number } | null = null;
+    for (const c of state.crawlers) {
+      if (!c.alive || c.born > t) continue;
+      if (!best || c.z > best.z) best = c;
+    }
+    const lane = best ? best.lane : 0;
+    const a = ((lane + 0.5) / LANES) * Math.PI * 2 - Math.PI / 2;
+    return [{ t, x: 400 + Math.cos(a) * 250, y: 300 + Math.sin(a) * 250 * 0.78 }];
+  };
+}
+
 interface Probe<S> {
   name: string;
   init: () => S;
@@ -144,6 +160,8 @@ const PRIM_T0: PrimevalStats = { maxSpears: 1, spearSpeed: 3, spearDamage: 1, fe
 const PRIM_MID: PrimevalStats = { maxSpears: 2, spearSpeed: 4.5, spearDamage: 3, fernDamage: 2, tribeMaxHp: 14, hunterSpeed: 3.2, echoMult: 0.7, salvageMult: 1 };
 const DEB_T0: DebrisStats = { cooldown: 20, damage: 1, streams: 1, thrust: 0.08, turnRate: 0.09, colonyMaxHp: 12, regen: 0, echoMult: 0.7, salvageMult: 1 };
 const DEB_MID: DebrisStats = { cooldown: 14, damage: 3, streams: 2, thrust: 0.128, turnRate: 0.144, colonyMaxHp: 21, regen: 2, echoMult: 0.7, salvageMult: 1 };
+const RIFT_T0: RiftStats = { cooldown: 22, damage: 1, pierce: 0, harmonics: 0, rimSpeed: 0.1, sealMaxHp: 10, echoMult: 0.7, salvageMult: 1 };
+const RIFT_MID: RiftStats = { cooldown: 16, damage: 3, pierce: 1, harmonics: 1, rimSpeed: 0.16, sealMaxHp: 19, echoMult: 0.7, salvageMult: 1 };
 
 describe.runIf(RUN)('balance report', () => {
   it('prints death waves per era and tier', () => {
@@ -166,6 +184,9 @@ describe.runIf(RUN)('balance report', () => {
       run({ name: 'DEBRIS  t0  casual', init: () => debrisInit(6, DEB_T0, 1), step: debrisStep, bot: debrisBot(24), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
       run({ name: 'DEBRIS  t0  skilled', init: () => debrisInit(6, DEB_T0, 1), step: debrisStep, bot: debrisBot(10), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
       run({ name: 'DEBRIS  mid skilled', init: () => debrisInit(6, DEB_MID, 1), step: debrisStep, bot: debrisBot(10), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
+      run({ name: 'RIFT    t0  casual', init: () => riftInit(7, RIFT_T0, 1), step: riftStep, bot: riftBot(22), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
+      run({ name: 'RIFT    t0  skilled', init: () => riftInit(7, RIFT_T0, 1), step: riftStep, bot: riftBot(9), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
+      run({ name: 'RIFT    mid skilled', init: () => riftInit(7, RIFT_MID, 1), step: riftStep, bot: riftBot(9), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
     ];
     console.log('\n' + lines.join('\n') + '\n');
   }, 120_000);

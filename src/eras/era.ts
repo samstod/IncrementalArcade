@@ -57,6 +57,7 @@ import { siegeEra } from './siegebreak/module';
 import { broadsideEra } from './broadside/module';
 import { primevalEra } from './primeval/module';
 import { debrisEra } from './debrisfield/module';
+import { riftEra } from './rift/module';
 
 export const ERAS: EraModule<unknown, unknown>[] = [
   defconEra as EraModule<unknown, unknown>,
@@ -65,6 +66,7 @@ export const ERAS: EraModule<unknown, unknown>[] = [
   broadsideEra as EraModule<unknown, unknown>,
   primevalEra as EraModule<unknown, unknown>,
   debrisEra as EraModule<unknown, unknown>,
+  riftEra as EraModule<unknown, unknown>,
 ];
 
 export function eraById(id: string): EraModule<unknown, unknown> {
@@ -73,7 +75,5 @@ export function eraById(id: string): EraModule<unknown, unknown> {
   return era;
 }
 
-/** Designed-but-unbuilt eras, teased on the timeline map. */
-export const TEASERS = [
-  { title: 'END OF TIME — THE RIFT', hint: 'the source of the Unraveling' },
-];
+/** Designed-but-unbuilt eras, teased on the monitor wall. All built! */
+export const TEASERS: { title: string; hint: string }[] = [];

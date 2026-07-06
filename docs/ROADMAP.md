@@ -54,7 +54,12 @@ Prove the hook: *lose → rewind → your ghosts fight beside you → upgrade �
   properties are pure functions of the parent id), and ricochet shards
   outward when they strike the colony. Ships die on collision and respawn
   at the station. Unlock: wave 5 in PRIMEVAL + 2000 chronotons.
-- ☐ THE RIFT (Tempest / wireframe) — the endgame era
+- ✅ THE RIFT (Tempest / color-cycling synthwave wireframe): sixteen lanes
+  down a projected well; entropy crawlers, lane-hopping flippers (seeded
+  hop schedules), and splitting tankers climb toward the Continuum Seal.
+  Pointer angle picks your rim lane; bolts dive with ENTROPY LANCE pierce
+  and LANE HARMONICS splash. Highest chronoton factor (14×); unlock: wave 5
+  in DEBRIS FIELD + 5000 chronotons. **ALL SEVEN ERAS COMPLETE.**
 
 ## M6 — Idle layer ✅
 - **Monitor wall (CHRONO COMMAND)** is now the home screen: one CRT per era
