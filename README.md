@@ -5,16 +5,18 @@ moments in history from **the Unraveling**. Every defeat rewinds the loop — an
 your past runs replay beside you as ghostly **Echoes**, firing every shot they
 ever fired, empowered by every upgrade you've bought since.
 
-**Current state:** five playable eras, each in its own art technology —
+**Current state:** six playable eras, each in its own art technology —
 *1983 DEFCON LOOP* (Missile Command, neon/CRT), *1944 FLAK ALLEY*
 (Galaga/1942-style, 8-bit NES pixel art), *1250 SIEGEBREAK* (Space Invaders
 as a castle siege, parchment/woodcut ink), *1720 BROADSIDE* (Breakout as an
-Age-of-Sail bombardment, 16-bit Amiga banded-gradient painterly), and
-*PREHISTORY PRIMEVAL* (Centipede in Atari 2600 fat pixels) — with the full
-lose → rewind → echo-replay → upgrade loop, a timeline map with
-unlock/travel, Temporal Resonance cross-era boosts, and the TEMPORAL SKIP /
+Age-of-Sail bombardment, 16-bit Amiga banded-gradient painterly),
+*PREHISTORY PRIMEVAL* (Centipede in Atari 2600 fat pixels), and *2286
+DEBRIS FIELD* (Asteroids in glowing vector line art) — with the full lose →
+rewind → echo-replay → upgrade loop, the CHRONO COMMAND monitor-wall idle
+layer, Temporal Resonance cross-era boosts, and the TEMPORAL SKIP /
 AUTO-REWIND quality-of-life layer. Era chain: each era's wave 5 unlocks the
-next (1983 → 1944 → 1250 → 1720 → Prehistory).
+next (1983 → 1944 → 1250 → 1720 → Prehistory → 2286). Only THE RIFT — the
+Tempest-style endgame — remains.
 
 - 📜 [Game Design Document](docs/GDD.md) — the seven eras, echo system, economy
 - 🗺️ [Roadmap](docs/ROADMAP.md) — milestones from slice to full game

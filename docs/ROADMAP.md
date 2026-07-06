@@ -47,7 +47,14 @@ Prove the hook: *lose → rewind → your ghosts fight beside you → upgrade �
   death plants a fern), fleas reseed columns, spiders prowl the hunting
   ground. First era with two-axis movement — the hunter roams the lower
   rows and autothrows spears. Unlock: wave 5 in BROADSIDE + 800 chronotons.
-- ☐ DEBRIS FIELD (Asteroids / vector) → THE RIFT (Tempest / wireframe)
+- ✅ DEBRIS FIELD (Asteroids / white vector with glow): defend the last
+  colony ship inside a dead fleet. Fighter with true inertia — the nose
+  chases your pointer and autofires forward, so aiming IS flying. Hulks
+  drift in on seeded vectors, split twice when shattered (fragment
+  properties are pure functions of the parent id), and ricochet shards
+  outward when they strike the colony. Ships die on collision and respawn
+  at the station. Unlock: wave 5 in PRIMEVAL + 2000 chronotons.
+- ☐ THE RIFT (Tempest / wireframe) — the endgame era
 
 ## M6 — Idle layer ✅
 - **Monitor wall (CHRONO COMMAND)** is now the home screen: one CRT per era

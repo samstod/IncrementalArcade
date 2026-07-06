@@ -13,6 +13,7 @@ import { flakInit, flakStep, planePos, type FlakStats } from '../src/eras/flakAl
 import { siegeInit, siegeStep, unitPos, type SiegeStats } from '../src/eras/siegebreak/sim';
 import { broadInit, broadStep, mortarY, BW as BROAD_W, type BroadStats } from '../src/eras/broadside/sim';
 import { primevalInit, primevalStep, HUNTER_TOP, PH as PRIM_H, type PrimevalStats } from '../src/eras/primeval/sim';
+import { debrisInit, debrisStep, CX as DCX, CY as DCY, type DebrisStats } from '../src/eras/debrisfield/sim';
 import type { InputEvent } from '../src/core/recorder';
 
 const RUN = process.env.BALANCE === '1';
@@ -94,6 +95,24 @@ function primevalBot(reactEvery: number) {
   };
 }
 
+function debrisBot(reactEvery: number) {
+  return (state: ReturnType<typeof debrisInit>, t: number): InputEvent[] => {
+    if (t % reactEvery !== 0) return [];
+    // Fly at the hulk closest to the colony — approach aligns the nose.
+    let best: { x: number; y: number } | null = null;
+    let bestD = Infinity;
+    for (const h of state.hulks) {
+      if (!h.alive || h.born > t) continue;
+      const d = Math.hypot(h.x - DCX, h.y - DCY);
+      if (d < bestD) {
+        bestD = d;
+        best = h;
+      }
+    }
+    return best ? [{ t, x: best.x, y: best.y }] : [{ t, x: DCX, y: DCY - 160 }];
+  };
+}
+
 interface Probe<S> {
   name: string;
   init: () => S;
@@ -123,6 +142,8 @@ const BROAD_T0: BroadStats = { ballDamage: 1, halfWidth: 34, paddleSpeed: 5, hul
 const BROAD_MID: BroadStats = { ballDamage: 3, halfWidth: 49, paddleSpeed: 8.3, hullMaxHp: 16, reload: 126, maxBalls: 3, echoMult: 0.7, salvageMult: 1 };
 const PRIM_T0: PrimevalStats = { maxSpears: 1, spearSpeed: 3, spearDamage: 1, fernDamage: 1, tribeMaxHp: 8, hunterSpeed: 2, echoMult: 0.7, salvageMult: 1 };
 const PRIM_MID: PrimevalStats = { maxSpears: 2, spearSpeed: 4.5, spearDamage: 3, fernDamage: 2, tribeMaxHp: 14, hunterSpeed: 3.2, echoMult: 0.7, salvageMult: 1 };
+const DEB_T0: DebrisStats = { cooldown: 20, damage: 1, streams: 1, thrust: 0.08, turnRate: 0.09, colonyMaxHp: 12, regen: 0, echoMult: 0.7, salvageMult: 1 };
+const DEB_MID: DebrisStats = { cooldown: 14, damage: 3, streams: 2, thrust: 0.128, turnRate: 0.144, colonyMaxHp: 21, regen: 2, echoMult: 0.7, salvageMult: 1 };
 
 describe.runIf(RUN)('balance report', () => {
   it('prints death waves per era and tier', () => {
@@ -142,6 +163,9 @@ describe.runIf(RUN)('balance report', () => {
       run({ name: 'PRIM    t0  casual', init: () => primevalInit(5, PRIM_T0, 1), step: primevalStep, bot: primevalBot(20), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
       run({ name: 'PRIM    t0  skilled', init: () => primevalInit(5, PRIM_T0, 1), step: primevalStep, bot: primevalBot(8), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
       run({ name: 'PRIM    mid skilled', init: () => primevalInit(5, PRIM_MID, 1), step: primevalStep, bot: primevalBot(8), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
+      run({ name: 'DEBRIS  t0  casual', init: () => debrisInit(6, DEB_T0, 1), step: debrisStep, bot: debrisBot(24), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
+      run({ name: 'DEBRIS  t0  skilled', init: () => debrisInit(6, DEB_T0, 1), step: debrisStep, bot: debrisBot(10), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
+      run({ name: 'DEBRIS  mid skilled', init: () => debrisInit(6, DEB_MID, 1), step: debrisStep, bot: debrisBot(10), wave: (s) => s.wave, over: (s) => s.over, tick: (s) => s.tick }),
     ];
     console.log('\n' + lines.join('\n') + '\n');
   }, 120_000);

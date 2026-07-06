@@ -56,6 +56,7 @@ import { flakEra } from './flakAlley/module';
 import { siegeEra } from './siegebreak/module';
 import { broadsideEra } from './broadside/module';
 import { primevalEra } from './primeval/module';
+import { debrisEra } from './debrisfield/module';
 
 export const ERAS: EraModule<unknown, unknown>[] = [
   defconEra as EraModule<unknown, unknown>,
@@ -63,6 +64,7 @@ export const ERAS: EraModule<unknown, unknown>[] = [
   siegeEra as EraModule<unknown, unknown>,
   broadsideEra as EraModule<unknown, unknown>,
   primevalEra as EraModule<unknown, unknown>,
+  debrisEra as EraModule<unknown, unknown>,
 ];
 
 export function eraById(id: string): EraModule<unknown, unknown> {
@@ -73,6 +75,5 @@ export function eraById(id: string): EraModule<unknown, unknown> {
 
 /** Designed-but-unbuilt eras, teased on the timeline map. */
 export const TEASERS = [
-  { title: '2286 — DEBRIS FIELD', hint: 'the fleet is already dead' },
   { title: 'END OF TIME — THE RIFT', hint: 'the source of the Unraveling' },
 ];
