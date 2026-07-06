@@ -74,7 +74,7 @@ Every era is a shooter/defense game **on purpose**: N simultaneous player instan
 | 2 | 1944 — WWII Pacific | **FLAK ALLEY** | Galaga / 1942 | 8-bit NES pixel art |
 | 3 | 1250 — Medieval | **SIEGEBREAK** | Space Invaders | Woven tapestry (Bayeux-style): wool fills, stitched outlines, border bands, Latin captions |
 | 4 | 1720 — Age of Sail | **BROADSIDE** | Breakout / Arkanoid | 16-bit Amiga-style painterly pixel art |
-| 5 | Prehistory | **PRIMEVAL** | Centipede | Atari 2600: fat pixels, garish clashing palette |
+| 5 | Prehistory | **PRIMEVAL** | Centipede | Cave painting: ochre + charcoal on torch-lit rock, handprints for lives |
 | 6 | 2286 — Far Future | **DEBRIS FIELD** | Asteroids | White/neon vector line art with glow |
 | 7 | The End of Time | **THE RIFT** | Tempest | Color-cycling synthwave wireframe vector |
 
