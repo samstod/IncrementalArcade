@@ -1,205 +1,231 @@
-// FLAK ALLEY art pass: 8-bit NES pixel art. Everything draws onto a 256×192
-// offscreen backbuffer with procedural sprites, then upscales to the main
-// canvas with image smoothing off for hard chunky pixels.
+// FLAK ALLEY art pass: wartime newsreel. The engagement is silver-gelatin
+// combat footage — monochrome with a sepia wash, animated film grain,
+// wandering scratch lines, exposure flicker, and sprocket judder. Runs open
+// on a silent-film intertitle card; waves arrive as lower-third captions.
+// Grain frames are pre-rendered once from fixed seeds.
 
+import { mulberry32 } from '../../core/rng';
 import {
   FlakState, planePos, shellPos, bombY, BOOM_LIFE,
   FW, FH, DECK_Y,
 } from './sim';
 
-// NES-flavored palette
-const SKY = '#6888fc';
-const SKY_HI = '#a4b4fc';
-const SEA = '#0044a8';
-const SEA_WAVE = '#3cbcfc';
-const DECK = '#787878';
-const DECK_LINE = '#b8b8b8';
-const DECK_EDGE = '#404040';
-const GUN = '#fcfcfc';
-const GUN_DARK = '#a8a8a8';
-const SHELL = '#fcfc54';
-const ECHO = '#a4e4fc';
-const PLANE_BODY = '#00a800';
-const PLANE_DARK = '#005800';
-const BOMBER_BODY = '#ac7c00';
-const BOMBER_DARK = '#503000';
-const BOMB = '#d82800';
-const BOOM_COLORS = ['#fcfcfc', '#fcfc54', '#fc7460', '#d82800'];
+const SC = 800 / FW; // 3.125: sim world → full-res film frame
 
-let back: HTMLCanvasElement | null = null;
+// Silver gelatin tones
+const SKY_HI = '#cdc8bd';
+const SKY_LO = '#a39d92';
+const SEA = '#565049';
+const DECK = '#3b3733';
+const DECK_LINE = '#6e6860';
+const SILHOUETTE = '#26231f';
+const TRACER = '#f7f3e9';
+const GHOST = 'rgba(214, 208, 196, 0.4)';
 
-function backbuffer(): CanvasRenderingContext2D {
-  if (!back) {
-    back = document.createElement('canvas');
-    back.width = FW;
-    back.height = FH;
-  }
-  return back.getContext('2d')!;
-}
+let grains: HTMLCanvasElement[] | null = null;
 
-// 1 = dark, 2 = body, 3 = highlight
-const FIGHTER = [
-  '..2..',
-  '.121.',
-  '22222',
-  '1.2.1',
-  '..1..',
-];
-const BOMBER = [
-  '..222..',
-  '.21112.',
-  '2222222',
-  '21.2.12',
-  '...2...',
-];
-
-function sprite(
-  ctx: CanvasRenderingContext2D,
-  map: string[],
-  x: number, y: number,
-  body: string, dark: string,
-): void {
-  const w = map[0].length;
-  const h = map.length;
-  const ox = Math.round(x - w / 2);
-  const oy = Math.round(y - h / 2);
-  for (let r = 0; r < h; r++) {
-    for (let c = 0; c < w; c++) {
-      const ch = map[r][c];
-      if (ch === '.') continue;
-      ctx.fillStyle = ch === '1' ? dark : body;
-      ctx.fillRect(ox + c, oy + r, 1, 1);
+function makeGrains(): HTMLCanvasElement[] {
+  return [0x6ee1, 0x1937, 0xace5].map((seed) => {
+    const c = document.createElement('canvas');
+    c.width = 400;
+    c.height = 300;
+    const g = c.getContext('2d')!;
+    const rng = mulberry32(seed);
+    const img = g.createImageData(400, 300);
+    for (let i = 0; i < img.data.length; i += 4) {
+      const v = Math.floor(rng() * 255);
+      img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+      img.data[i + 3] = rng() < 0.5 ? 26 : 0;
     }
-  }
+    g.putImageData(img, 0, 0);
+    return c;
+  });
 }
 
-export function flakRender(main: CanvasRenderingContext2D, state: FlakState): void {
-  const ctx = backbuffer();
-  const t = state.tick;
+function hash(n: number): number {
+  return mulberry32(n >>> 0)();
+}
 
-  // Sky with a lighter horizon band, then sea, then deck.
-  ctx.fillStyle = SKY;
-  ctx.fillRect(0, 0, FW, FH);
-  // Drifting pixel clouds
-  ctx.fillStyle = SKY_HI;
+export function flakRender(ctx: CanvasRenderingContext2D, state: FlakState): void {
+  const t = state.tick;
+  if (!grains) grains = makeGrains();
+  const W = FW * SC, H = FH * SC;
+
+  ctx.save();
+
+  // Sprocket judder: every so often the frame slips a few scanlines.
+  const reel = hash(Math.floor(t / 97) * 31 + 7);
+  if (reel < 0.16 && t % 97 < 4) ctx.translate(0, (reel - 0.08) * 60);
+  if (state.shake > 0)
+    ctx.translate(Math.sin(t * 1.7) * state.shake * 1.4, Math.cos(t * 2.5) * state.shake * 1.1);
+
+  ctx.scale(SC, SC); // sim coordinates from here
+
+  // ── The scene, in silver ──
+  const sky = ctx.createLinearGradient(0, 0, 0, DECK_Y);
+  sky.addColorStop(0, SKY_HI);
+  sky.addColorStop(1, SKY_LO);
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, FW, DECK_Y);
+  // Overexposed clouds.
+  ctx.fillStyle = 'rgba(238, 234, 226, 0.7)';
   for (let i = 0; i < 5; i++) {
     const cx = ((i * 73 + Math.floor(t / 20)) % (FW + 40)) - 20;
     const cy = 18 + i * 26;
-    ctx.fillRect(cx, cy, 22, 4);
-    ctx.fillRect(cx + 4, cy - 3, 14, 3);
-    ctx.fillRect(cx + 6, cy + 4, 10, 2);
+    ctx.beginPath();
+    ctx.ellipse(cx + 11, cy, 14, 4.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx + 4, cy - 3, 8, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
   }
-  ctx.fillRect(0, DECK_Y - 26, FW, 10);
   ctx.fillStyle = SEA;
-  ctx.fillRect(0, DECK_Y - 16, FW, FH - DECK_Y + 16);
-  ctx.fillStyle = SEA_WAVE;
+  ctx.fillRect(0, DECK_Y - 16, FW, 16);
+  ctx.fillStyle = 'rgba(220, 215, 205, 0.35)';
   for (let i = 0; i < 12; i++) {
     const wx = ((i * 47 + Math.floor(t / 8) * 2) % (FW + 20)) - 10;
     ctx.fillRect(wx, DECK_Y - 13 + (i % 3) * 4, 6, 1);
   }
-
-  // Carrier deck
-  ctx.fillStyle = DECK_EDGE;
-  ctx.fillRect(0, DECK_Y - 2, FW, 2);
   ctx.fillStyle = DECK;
   ctx.fillRect(0, DECK_Y, FW, FH - DECK_Y);
   ctx.fillStyle = DECK_LINE;
   for (let x = 4; x < FW; x += 16) ctx.fillRect(x, DECK_Y + 6, 8, 1);
 
-  // Carrier HP as a row of hull segments.
+  // Carrier integrity: pale blocks along the hull.
   for (let i = 0; i < state.stats.carrierMaxHp; i++) {
-    ctx.fillStyle = i < state.carrierHp ? '#00a800' : '#d82800';
+    ctx.fillStyle = i < state.carrierHp ? '#c9c3b7' : '#191714';
     ctx.fillRect(4 + i * 7, FH - 6, 5, 3);
   }
 
-  // Bombs
+  // Bombs: dark teardrops.
   for (const b of state.bombs) {
     if (!b.alive) continue;
-    ctx.fillStyle = BOMB;
-    ctx.fillRect(Math.round(b.x) - 1, Math.round(bombY(b, t)) - 1, 2, 3);
+    ctx.fillStyle = SILHOUETTE;
+    ctx.beginPath();
+    ctx.ellipse(b.x, bombY(b, t), 1.4, 2.4, 0, 0, Math.PI * 2);
+    ctx.fill();
   }
 
-  // Planes (flash white on recent spawn-in is skipped; keep it clean)
+  // Planes: hard black silhouettes against the bright sky.
   for (const p of state.planes) {
     if (!p.alive) continue;
     const pos = planePos(p, t);
     if (pos.y < -6) continue;
-    if (p.bomber) sprite(ctx, BOMBER, pos.x, pos.y, BOMBER_BODY, BOMBER_DARK);
-    else sprite(ctx, FIGHTER, pos.x, pos.y, PLANE_BODY, PLANE_DARK);
+    const s = p.bomber ? 1.5 : 1;
+    ctx.fillStyle = SILHOUETTE;
+    ctx.beginPath(); // wings
+    ctx.ellipse(pos.x, pos.y, 6.5 * s, 1.6 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath(); // fuselage
+    ctx.ellipse(pos.x, pos.y, 1.6 * s, 4.2 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(pos.x - 2.6 * s, pos.y - 4.6 * s, 5.2 * s, 1.2); // tailplane
     if (p.maxHp > 1 && p.hp < p.maxHp) {
-      ctx.fillStyle = '#fc7460';
-      ctx.fillRect(Math.round(pos.x) - 3, Math.round(pos.y) - 6, Math.max(1, Math.round(6 * (p.hp / p.maxHp))), 1);
+      // Trailing smoke from a wounded engine.
+      ctx.fillStyle = 'rgba(60, 55, 50, 0.5)';
+      for (let k = 1; k <= 3; k++)
+        ctx.beginPath(), ctx.arc(pos.x - k * 3, pos.y - k * 4, 1.6 + k * 0.8, 0, Math.PI * 2), ctx.fill();
     }
   }
 
-  // Shells
+  // Shells: tracer rounds burning up the frame.
   for (const s of state.shells) {
     if (!s.alive) continue;
     const sy = shellPos(s, t, state.stats.shellSpeed);
-    ctx.fillStyle = s.owner === 0 ? SHELL : ECHO;
-    ctx.globalAlpha = s.owner === 0 ? 1 : 0.7;
-    ctx.fillRect(Math.round(s.x), Math.round(sy), 1, 3);
-    ctx.globalAlpha = 1;
+    ctx.strokeStyle = s.owner === 0 ? TRACER : GHOST;
+    ctx.lineWidth = s.owner === 0 ? 1 : 0.7;
+    ctx.beginPath();
+    ctx.moveTo(s.x, sy + 4);
+    ctx.lineTo(s.x, sy);
+    ctx.stroke();
   }
 
-  // Guns: live player solid, echoes pale ghosts.
+  // Guns: the crew's silhouette, ghosts half-developed.
   state.players.forEach((g, pi) => {
     const ghost = pi > 0;
     const x = Math.round(g.x);
-    ctx.globalAlpha = ghost ? 0.45 : 1;
-    const body = ghost ? ECHO : GUN;
-    const dark = ghost ? '#6888fc' : GUN_DARK;
-    ctx.fillStyle = dark;
+    ctx.globalAlpha = ghost ? 0.4 : 1;
+    ctx.fillStyle = ghost ? '#8d867b' : SILHOUETTE;
     ctx.fillRect(x - 4, DECK_Y - 4, 8, 4);
-    ctx.fillStyle = body;
     ctx.fillRect(x - 2, DECK_Y - 7, 4, 3);
-    ctx.fillRect(x - 1, DECK_Y - 10, 2, 3);
+    ctx.fillRect(x - 1, DECK_Y - 11, 2, 4);
     ctx.globalAlpha = 1;
   });
 
-  // Explosions: expanding pixel rings.
+  // Explosions: white blooms with a smudge of smoke above.
   for (const bm of state.booms) {
     const age = t - bm.born;
-    const r = (bm.big ? 1.5 : 1) * (1 + age * 0.45);
-    ctx.fillStyle = BOOM_COLORS[Math.min(BOOM_COLORS.length - 1, Math.floor(age / 5))];
-    ctx.globalAlpha = bm.owner > 0 ? 0.6 : 1;
-    for (let a = 0; a < 8; a++) {
-      const ang = (a / 8) * Math.PI * 2;
-      ctx.fillRect(
-        Math.round(bm.x + Math.cos(ang) * r),
-        Math.round(bm.y + Math.sin(ang) * r),
-        age < BOOM_LIFE / 2 ? 2 : 1, age < BOOM_LIFE / 2 ? 2 : 1,
-      );
-    }
+    const r = (bm.big ? 1.5 : 1) * (1.5 + age * 0.5);
+    ctx.globalAlpha = Math.max(0, 1 - age / BOOM_LIFE) * (bm.owner > 0 ? 0.5 : 1);
+    ctx.fillStyle = '#f2eee4';
+    ctx.beginPath();
+    ctx.arc(bm.x, bm.y, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(70, 64, 58, 0.5)';
+    ctx.beginPath();
+    ctx.arc(bm.x + 1, bm.y - r * 0.9, r * 0.7, 0, Math.PI * 2);
+    ctx.fill();
     ctx.globalAlpha = 1;
   }
 
-  // Banners drawn in the low-res buffer so the text pixelates too.
-  ctx.textAlign = 'center';
-  if (t < 140) {
-    ctx.fillStyle = '#000000';
-    ctx.font = '10px monospace';
-    ctx.fillText('1944 — FLAK ALLEY', FW / 2 + 1, 61);
-    ctx.fillStyle = '#fcfcfc';
-    ctx.fillText('1944 — FLAK ALLEY', FW / 2, 60);
-    ctx.font = '7px monospace';
-    ctx.fillStyle = '#d82800';
-    ctx.fillText('GUARD THE CARRIER. STEER. THE GUN NEVER STOPS.', FW / 2, 72);
+  ctx.restore();
+  ctx.save();
+
+  // ── Film artifacts, full-res ──
+  // Sepia wash + exposure flicker.
+  ctx.fillStyle = 'rgba(104, 82, 48, 0.1)';
+  ctx.fillRect(0, 0, W, H);
+  const flick = hash(t * 13 + 5);
+  ctx.fillStyle = flick < 0.5 ? `rgba(255, 250, 240, ${flick * 0.06})` : `rgba(10, 8, 5, ${(flick - 0.5) * 0.09})`;
+  ctx.fillRect(0, 0, W, H);
+  // Grain.
+  ctx.globalAlpha = 0.5;
+  ctx.drawImage(grains[Math.floor(t / 4) % grains.length], 0, 0, W, H);
+  ctx.globalAlpha = 1;
+  // A wandering scratch or two.
+  const scr = hash(Math.floor(t / 37) * 17 + 3);
+  if (scr < 0.55) {
+    ctx.strokeStyle = `rgba(235, 230, 220, ${0.1 + scr * 0.12})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(scr * W, 0);
+    ctx.lineTo(scr * W + (hash(t) - 0.5) * 6, H);
+    ctx.stroke();
   }
-  if (state.banner && t < state.banner.until) {
-    ctx.font = '9px monospace';
-    ctx.fillStyle = '#fcfc54';
-    ctx.fillText(state.banner.text, FW / 2, 44);
+  // Vignette: the lens barrel.
+  const v = ctx.createRadialGradient(W / 2, H / 2, H * 0.42, W / 2, H / 2, H * 0.78);
+  v.addColorStop(0, 'transparent');
+  v.addColorStop(1, 'rgba(8, 6, 4, 0.55)');
+  ctx.fillStyle = v;
+  ctx.fillRect(0, 0, W, H);
+
+  // ── Intertitle card + lower-third captions ──
+  ctx.textAlign = 'center';
+  if (t < 170) {
+    const a = t < 20 ? 1 : t > 130 ? Math.max(0, (170 - t) / 40) : 1;
+    ctx.globalAlpha = a;
+    ctx.fillStyle = '#0b0906';
+    ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = '#d8d2c4';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(60, 60, W - 120, H - 120);
+    ctx.strokeRect(72, 72, W - 144, H - 144);
+    ctx.fillStyle = '#d8d2c4';
+    ctx.font = 'bold 40px Georgia, serif';
+    ctx.fillText('1944 — FLAK ALLEY', W / 2, H / 2 - 26);
+    ctx.font = 'italic 20px Georgia, serif';
+    ctx.fillText('“Gunners of the Pacific Fleet hold the line.”', W / 2, H / 2 + 22);
+    ctx.font = '14px Georgia, serif';
+    ctx.fillText('— CHRONO NEWSREEL No. 1944 —', W / 2, H / 2 + 58);
+    ctx.globalAlpha = 1;
+  }
+  if (state.banner && t < state.banner.until && t >= 170) {
+    ctx.globalAlpha = Math.min(1, (state.banner.until - t) / 40);
+    ctx.fillStyle = 'rgba(10, 8, 5, 0.6)';
+    ctx.fillRect(W / 2 - 220, H - 96, 440, 34);
+    ctx.fillStyle = '#e8e2d4';
+    ctx.font = 'bold 19px Georgia, serif';
+    ctx.fillText(`${state.banner.text} — ENEMY AIRCRAFT SIGHTED`, W / 2, H - 72);
+    ctx.globalAlpha = 1;
   }
   ctx.textAlign = 'left';
-
-  // Upscale to the main canvas with hard pixels + screen shake.
-  main.save();
-  main.imageSmoothingEnabled = false;
-  main.fillStyle = '#000';
-  main.fillRect(0, 0, main.canvas.width, main.canvas.height);
-  if (state.shake > 0)
-    main.translate(Math.sin(t * 1.9) * state.shake * 0.5, Math.cos(t * 2.7) * state.shake * 0.4);
-  main.drawImage(back!, 0, 0, FW, FH, 0, 0, main.canvas.width, main.canvas.height);
-  main.restore();
+  ctx.restore();
 }

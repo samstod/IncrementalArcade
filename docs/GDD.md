@@ -70,10 +70,10 @@ Every era is a shooter/defense game **on purpose**: N simultaneous player instan
 
 | # | Era | Codename | Knockoff of | Art style |
 |---|-----|----------|-------------|-----------|
-| 1 | 1983 — Cold War | **DEFCON LOOP** | Missile Command | Neon-on-black raster arcade, phosphor trails, CRT scanlines |
-| 2 | 1944 — WWII Pacific | **FLAK ALLEY** | Galaga / 1942 | 8-bit NES pixel art |
+| 1 | 1983 — Cold War | **DEFCON LOOP** | Missile Command | NORAD phosphor terminal: single green phosphor, tactical grid, persistence afterglow, DEFCON readout |
+| 2 | 1944 — WWII Pacific | **FLAK ALLEY** | Galaga / 1942 | Wartime newsreel: silver-gelatin monochrome, film grain, scratches, intertitle cards |
 | 3 | 1250 — Medieval | **SIEGEBREAK** | Space Invaders | Woven tapestry (Bayeux-style): wool fills, stitched outlines, border bands, Latin captions |
-| 4 | 1720 — Age of Sail | **BROADSIDE** | Breakout / Arkanoid | 16-bit Amiga-style painterly pixel art |
+| 4 | 1720 — Age of Sail | **BROADSIDE** | Breakout / Arkanoid | Aged naval oil painting: gilt frame, brass plaque, brushwork + craquelure varnish |
 | 5 | Prehistory | **PRIMEVAL** | Centipede | Cave painting: ochre + charcoal on torch-lit rock, handprints for lives |
 | 6 | 2286 — Far Future | **DEBRIS FIELD** | Asteroids | White/neon vector line art with glow |
 | 7 | The End of Time | **THE RIFT** | Tempest | Color-cycling synthwave wireframe vector |
@@ -169,10 +169,10 @@ interface EraModule<S> {
 ```
 
 ### 6.4 Art direction implementation notes
-- **DEFCON LOOP:** additive-feel glow via `shadowBlur`, phosphor trails (gradient strokes), CSS scanline overlay + vignette, screen shake on city loss.
-- **FLAK ALLEY:** offscreen low-res canvas (256×240) scaled up with `imageSmoothingEnabled=false`; NES 54-color palette discipline.
+- **DEFCON LOOP:** true phosphor persistence — the canvas is faded each frame instead of cleared, so every track smears into afterglow; bracketed city designators with three-letter codes, dotted inbound tracks, corner TRK/WAVE readouts, and a DEFCON level that steps down as cities die.
+- **FLAK ALLEY:** silver-gelatin scene (black silhouettes against an overexposed sky, white tracer rounds) under animated pre-rendered grain, wandering scratch lines, exposure flicker, sprocket judder, sepia wash, and a lens vignette; runs open on a bordered silent-film intertitle and waves arrive as lower-third captions.
 - **SIEGEBREAK:** pre-rendered linen (weave lines, dye bands, slubs) with Bayeux border bands (gold diamonds, stitched birds); all outlines drawn with `setLineDash` so they read as thread; impacts unravel as loops of loose red thread; captions in faux-Latin, waves in Roman numerals.
-- **BROADSIDE:** 32-color painterly palette, chunky sprite work, parallax sea.
+- **BROADSIDE:** Turner-ish glazed sky and dark sea painted fresh each frame, then finished under pre-rendered brushwork (soft directional strokes), craquelure varnish cracks, a wear-worn gilt frame with gadrooned beads, and a brass plaque reading “The Bombardment of the Fortress” — 1720, oil on canvas.
 - **PRIMEVAL:** pre-rendered rock wall (mineral blotches, cracks, vignette) with breathing firelight; every figure daubed twice with a small offset for chalky edges; the pede is a charcoal serpent, hunters are Lascaux stick figures, echoes are white-clay ancestor spirits, and tribe HP is a row of ochre handprints.
 - **DEBRIS FIELD:** pure stroked paths, white core + colored glow, wraparound draw at edges.
 - **THE RIFT:** projected 3D well (precomputed lane geometry), HSL color-cycling strokes.
