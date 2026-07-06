@@ -8,9 +8,9 @@ ever fired, empowered by every upgrade you've bought since.
 **Current state: all seven eras playable**, each in its own art technology —
 *1983 DEFCON LOOP* (Missile Command, neon/CRT), *1944 FLAK ALLEY*
 (Galaga/1942-style, 8-bit NES pixel art), *1250 SIEGEBREAK* (Space Invaders
-as a castle siege, parchment/woodcut ink), *1720 BROADSIDE* (Breakout as an
+as a castle siege, woven Bayeux-style tapestry), *1720 BROADSIDE* (Breakout as an
 Age-of-Sail bombardment, 16-bit Amiga banded-gradient painterly),
-*PREHISTORY PRIMEVAL* (Centipede in Atari 2600 fat pixels), *2286 DEBRIS
+*PREHISTORY PRIMEVAL* (Centipede as an ochre-and-charcoal cave painting), *2286 DEBRIS
 FIELD* (Asteroids in glowing vector line art), and *END OF TIME — THE RIFT*
 (Tempest in color-cycling synthwave wireframe, the endgame) — with the full
 lose → rewind → echo-replay → upgrade loop, the CHRONO COMMAND monitor-wall

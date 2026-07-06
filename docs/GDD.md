@@ -72,7 +72,7 @@ Every era is a shooter/defense game **on purpose**: N simultaneous player instan
 |---|-----|----------|-------------|-----------|
 | 1 | 1983 — Cold War | **DEFCON LOOP** | Missile Command | Neon-on-black raster arcade, phosphor trails, CRT scanlines |
 | 2 | 1944 — WWII Pacific | **FLAK ALLEY** | Galaga / 1942 | 8-bit NES pixel art |
-| 3 | 1250 — Medieval | **SIEGEBREAK** | Space Invaders | Two-tone parchment / woodcut (1-bit + paper texture) |
+| 3 | 1250 — Medieval | **SIEGEBREAK** | Space Invaders | Woven tapestry (Bayeux-style): wool fills, stitched outlines, border bands, Latin captions |
 | 4 | 1720 — Age of Sail | **BROADSIDE** | Breakout / Arkanoid | 16-bit Amiga-style painterly pixel art |
 | 5 | Prehistory | **PRIMEVAL** | Centipede | Atari 2600: fat pixels, garish clashing palette |
 | 6 | 2286 — Far Future | **DEBRIS FIELD** | Asteroids | White/neon vector line art with glow |
@@ -171,9 +171,9 @@ interface EraModule<S> {
 ### 6.4 Art direction implementation notes
 - **DEFCON LOOP:** additive-feel glow via `shadowBlur`, phosphor trails (gradient strokes), CSS scanline overlay + vignette, screen shake on city loss.
 - **FLAK ALLEY:** offscreen low-res canvas (256×240) scaled up with `imageSmoothingEnabled=false`; NES 54-color palette discipline.
-- **SIEGEBREAK:** two-tone rendering onto a parchment texture; dithered "ink" fills; jittered line ends for a woodcut feel.
+- **SIEGEBREAK:** pre-rendered linen (weave lines, dye bands, slubs) with Bayeux border bands (gold diamonds, stitched birds); all outlines drawn with `setLineDash` so they read as thread; impacts unravel as loops of loose red thread; captions in faux-Latin, waves in Roman numerals.
 - **BROADSIDE:** 32-color painterly palette, chunky sprite work, parallax sea.
-- **PRIMEVAL:** double-wide fat pixels (160×192 backbuffer), deliberately clashing 2600 hues.
+- **PRIMEVAL:** pre-rendered rock wall (mineral blotches, cracks, vignette) with breathing firelight; every figure daubed twice with a small offset for chalky edges; the pede is a charcoal serpent, hunters are Lascaux stick figures, echoes are white-clay ancestor spirits, and tribe HP is a row of ochre handprints.
 - **DEBRIS FIELD:** pure stroked paths, white core + colored glow, wraparound draw at edges.
 - **THE RIFT:** projected 3D well (precomputed lane geometry), HSL color-cycling strokes.
 
